@@ -47,6 +47,7 @@ class Case(CreatedAt, Base):
     response_due_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
     raw_snapshot: Mapped[dict] = mapped_column(sa.JSON, default=dict)  # last raw dispute JSON
     version: Mapped[int] = mapped_column(sa.Integer, default=1)
+    synthetic: Mapped[bool] = mapped_column(sa.Boolean, default=False)  # eval-seeded case
 
 
 class WebhookEvent(CreatedAt, Base):
@@ -149,6 +150,21 @@ class Contradiction(CreatedAt, Base):
 
 
 # ------------------------------------------------------- decision + action
+class Analysis(CreatedAt, Base):
+    """One agent run over a case: model, prompt version, raw structured output."""
+
+    __tablename__ = "analyses"
+
+    id: Mapped[str] = pk()
+    case_id: Mapped[str] = mapped_column(sa.ForeignKey("cases.id"))
+    model: Mapped[str] = mapped_column(sa.String(128), default="")
+    prompt_version: Mapped[str] = mapped_column(sa.String(16), default="v1")
+    status: Mapped[str] = mapped_column(sa.String(16))  # OK | FALLBACK | FAILED
+    error: Mapped[str] = mapped_column(sa.Text, default="")
+    raw_output: Mapped[dict] = mapped_column(sa.JSON, default=dict)
+    recommended_action: Mapped[str] = mapped_column(sa.String(16), default="")
+
+
 class Decision(CreatedAt, Base):
     __tablename__ = "decisions"
 

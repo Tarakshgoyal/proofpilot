@@ -22,8 +22,20 @@ from .config import settings
 ROOT = Path(__file__).resolve().parents[2]
 WEBHOOK_DIR = ROOT / "fixtures" / "webhooks"
 
-app = FastAPI(title="ProofPilot", version="0.2.0")
+app = FastAPI(title="ProofPilot", version="0.3.0")
 app.include_router(api_router)
+
+# serve the built frontend when present (dev uses `npm run dev` + proxy)
+_FRONTEND = ROOT / "frontend" / "dist"
+if _FRONTEND.exists():
+    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse
+
+    app.mount("/assets", StaticFiles(directory=_FRONTEND / "assets"), name="assets")
+
+    @app.get("/", include_in_schema=False)
+    async def index():
+        return FileResponse(_FRONTEND / "index.html")
 
 
 @app.on_event("startup")

@@ -108,10 +108,25 @@ def handle_parse_document(session, payload: dict) -> dict:
     return {"spans": n_spans}
 
 
+def handle_investigate(session, payload: dict) -> dict:
+    case = session.scalar(sa.select(Case).where(Case.id == payload["case_id"]))
+    if case is None:
+        return {"error": "case_not_found"}
+    from .agent import run_agent
+    from .verify import run_verifier
+
+    analysis = run_agent(session, case)
+    verdict = run_verifier(session, case)
+    session.commit()
+    return {"analysis": analysis.status, "action": analysis.recommended_action,
+            **verdict}
+
+
 HANDLERS = {
     "sync_disputes": handle_sync_disputes,
     "collect_case": handle_collect_case,
     "parse_document": handle_parse_document,
+    "investigate": handle_investigate,
 }
 
 

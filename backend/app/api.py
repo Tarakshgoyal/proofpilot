@@ -19,7 +19,7 @@ from fastapi.responses import FileResponse
 
 from .db import SessionLocal
 from .docs_pipeline import STORAGE, find_quote, persist_document
-from .models import Case, Document, Fact, Job, Span
+from .models import Analysis, Case, Claim, Contradiction, Document, Fact, Job, Span
 from .worker import enqueue
 
 router = APIRouter(prefix="/api")
@@ -42,22 +42,40 @@ def sync():
 
 @router.get("/cases")
 def list_cases():
+    """Batched counts (no N+1) — safe against remote DBs like Neon."""
     with SessionLocal() as session:
         cases = session.scalars(sa.select(Case).order_by(Case.created_at.desc())).all()
+
+        def _counts(model, *filters):
+            q = (sa.select(model.case_id, sa.func.count())
+                 .where(*filters).group_by(model.case_id))
+            return dict(session.execute(q).all())
+
+        fact_counts = _counts(Fact)
+        doc_counts = _counts(Document)
+        contra_counts = _counts(Contradiction)
+        verified_counts = _counts(Claim, Claim.status == "VERIFIED")
+        rejected_counts = _counts(Claim, Claim.status.in_(("UNSUPPORTED", "CONTRADICTED")))
+        actions = {}
+        for an in session.scalars(sa.select(Analysis)
+                                  .order_by(Analysis.created_at)).all():
+            actions[an.case_id] = an.recommended_action  # last write wins
+
         out = []
         for c in cases:
-            facts = session.scalar(
-                sa.select(sa.func.count()).select_from(Fact).where(Fact.case_id == c.id))
-            docs = session.scalar(
-                sa.select(sa.func.count()).select_from(Document)
-                .where(Document.case_id == c.id))
             out.append({
                 "id": c.id, "dispute_id": c.dispute_id, "reason": c.reason,
                 "stage": c.stage, "provider_status": c.provider_status,
-                "workflow_status": c.workflow_status,
+                "workflow_status": c.workflow_status, "synthetic": c.synthetic,
                 "amount_minor": c.amount_minor, "currency": c.currency,
                 "response_due_at": c.response_due_at.isoformat() if c.response_due_at else None,
-                "version": c.version, "fact_count": facts, "document_count": docs,
+                "version": c.version,
+                "fact_count": fact_counts.get(c.id, 0),
+                "document_count": doc_counts.get(c.id, 0),
+                "contradiction_count": contra_counts.get(c.id, 0),
+                "claims_verified": verified_counts.get(c.id, 0),
+                "claims_rejected": rejected_counts.get(c.id, 0),
+                "recommended_action": actions.get(c.id, ""),
             })
         return {"cases": out}
 
@@ -142,6 +160,49 @@ def get_file(document_id: str):
             raise HTTPException(404, "document not found")
         return FileResponse(doc.storage_path, media_type=doc.mime,
                             filename=doc.filename)
+
+
+@router.post("/cases/{case_id}/analyse")
+def analyse_case(case_id: str):
+    with SessionLocal() as session:
+        _case_or_404(session, case_id)
+        job = enqueue(session, "investigate", {"case_id": case_id})
+        session.commit()
+        return {"jobId": job.id, "status": "QUEUED"}, 202
+
+
+@router.get("/cases/{case_id}/proposal")
+def get_proposal(case_id: str):
+    """Agent + verifier output: claims with statuses, checklist, contradictions."""
+    with SessionLocal() as session:
+        case = _case_or_404(session, case_id)
+        analysis = session.scalar(
+            sa.select(Analysis).where(Analysis.case_id == case.id)
+            .order_by(Analysis.created_at.desc()))
+        claims = session.scalars(
+            sa.select(Claim).where(Claim.case_id == case.id)).all()
+        contradictions = session.scalars(
+            sa.select(Contradiction).where(Contradiction.case_id == case.id)).all()
+        return {
+            "case": _case_summary(case),
+            "analysis": None if analysis is None else {
+                "id": analysis.id, "status": analysis.status,
+                "model": analysis.model, "promptVersion": analysis.prompt_version,
+                "recommendedAction": analysis.recommended_action,
+                "error": analysis.error or None,
+                "output": analysis.raw_output,
+            },
+            "claims": [{
+                "id": c.id, "claimType": c.claim_type, "statement": c.statement,
+                "status": c.status, "reason": c.reason,
+                "factIds": c.fact_ids, "quoteRef": (c.span_ids or [None])[0],
+            } for c in claims],
+            "contradictions": [{
+                "id": x.id, "rule": x.rule, "severity": x.severity,
+                "explanation": x.explanation,
+            } for x in contradictions],
+            "blocking": sum(1 for x in contradictions if x.severity == "BLOCKING"),
+        }
 
 
 @router.get("/jobs/{job_id}")
