@@ -2,8 +2,8 @@
   "received_at": "2026-11-07T10:53:05Z",
   "event_id": "WH-5SK9846305621040T-6GU3729575375454J",
   "event_type": "CUSTOMER.DISPUTE.CREATED",
-  "verified": false,
-  "verification_error": "PAYPAL_WEBHOOK_ID not configured",
+  "verified": true,
+  "verification_error": null,
   "headers": {
     "paypal-transmission-id": "687deb37-da99-11f1-98c7-db4879c51cb2",
     "paypal-transmission-time": "2026-11-07T10:53:04Z",
