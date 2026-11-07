@@ -85,3 +85,22 @@ Everything else is automated, and every PayPal response is saved under
 | create dispute: `TRANSACTION_NOT_ELIGIBLE`-style error | The capture is too fresh — wait a minute and rerun `dispute` (the script is resumable) |
 | provide-evidence 400 on the file | The script auto-retries with the alternate part name; if both fail, paste the error — it names the allowed types |
 | webhook never arrives | Check `ngrok` still running; `python tools/setup_webhook.py list`; the receiver logs every hit |
+
+## Day-0 learning: creating disputes as a buyer
+
+`POST /v1/customer/disputes` (sandbox-only) with a `PayPal-Auth-Assertion`
+JWT (`{"iss": CLIENT_ID, "email": BUYER_EMAIL}`, alg:none) requires **prior
+buyer consent** via a *Log in with PayPal* flow enabled on the REST app
+(app settings → Features → Log in with PayPal, with the
+`https://uri.paypal.com/services/disputes/create` scope in the consent),
+otherwise PayPal returns `invalid_request: No permissions to set
+target_client_id`.
+
+**Day-0 shortcut (documented path):** the buyer opens the dispute through
+the sandbox **Resolution Center** UI (sandbox.paypal.com → the transaction →
+Report a problem → Item not received). This is what real buyers do; the
+dispute then flows to the merchant API exactly the same, and the
+`CUSTOMER.DISPUTE.CREATED` webhook fires.
+
+API-created disputes remain desirable later for the one-click demo button;
+that needs the LiwP consent flow (TODO Day 1+).

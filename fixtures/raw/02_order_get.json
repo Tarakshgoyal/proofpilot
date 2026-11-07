@@ -1,0 +1,86 @@
+{
+  "step": "02_order_get",
+  "recorded_at": "2026-11-07T10:40:03Z",
+  "method": "GET",
+  "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/93561518JU2949457",
+  "status": 200,
+  "note": "",
+  "body": {
+    "id": "93561518JU2949457",
+    "intent": "CAPTURE",
+    "status": "APPROVED",
+    "payment_source": {
+      "paypal": {
+        "email_address": "sb-41krp53770489@personal.example.com",
+        "account_id": "HVYDNJYKT5FUA",
+        "account_status": "VERIFIED",
+        "name": {
+          "given_name": "John",
+          "surname": "Doe"
+        },
+        "address": {
+          "country_code": "US"
+        }
+      }
+    },
+    "purchase_units": [
+      {
+        "reference_id": "pp-demo-001",
+        "amount": {
+          "currency_code": "USD",
+          "value": "25.00",
+          "breakdown": {}
+        },
+        "payee": {
+          "email_address": "sb-kp0h053762310@business.example.com",
+          "merchant_id": "N999U2WKXLHAA",
+          "display_data": {
+            "brand_name": "ProofPilot Demo Store"
+          }
+        },
+        "description": "ProofPilot demo widget",
+        "shipping": {
+          "name": {
+            "full_name": "John Doe"
+          },
+          "address": {
+            "address_line_1": "2211 N First St",
+            "admin_area_2": "San Jose",
+            "admin_area_1": "CA",
+            "postal_code": "95131",
+            "country_code": "US"
+          }
+        }
+      }
+    ],
+    "payer": {
+      "name": {
+        "given_name": "John",
+        "surname": "Doe"
+      },
+      "email_address": "sb-41krp53770489@personal.example.com",
+      "payer_id": "HVYDNJYKT5FUA",
+      "address": {
+        "country_code": "US"
+      }
+    },
+    "create_time": "2026-11-07T10:32:42Z",
+    "links": [
+      {
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/93561518JU2949457",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/93561518JU2949457",
+        "rel": "update",
+        "method": "PATCH"
+      },
+      {
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/93561518JU2949457/capture",
+        "rel": "capture",
+        "method": "POST"
+      }
+    ]
+  }
+}

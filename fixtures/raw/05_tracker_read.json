@@ -1,0 +1,46 @@
+{
+  "step": "05_tracker_read",
+  "recorded_at": "2026-11-07T10:40:11Z",
+  "method": "GET",
+  "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers?transaction_id=4D070507B5530910M",
+  "status": 200,
+  "note": "",
+  "body": {
+    "trackers": [
+      {
+        "transaction_id": "4D070507B5530910M",
+        "tracking_number": "PP1794048007IN",
+        "tracking_number_type": "CARRIER_PROVIDED",
+        "status": "SHIPPED",
+        "shipment_date": "2026-11-07",
+        "carrier": "OTHER",
+        "carrier_name_other": "ProofPilot Test Carrier",
+        "notify_buyer": false,
+        "last_updated_time": "1794048008093",
+        "shipment_direction": "FORWARD",
+        "shipment_uploader": "MERCHANT",
+        "links": [
+          {
+            "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/4D070507B5530910M-PP1794048007IN",
+            "rel": "self",
+            "method": "GET",
+            "encType": "application/json"
+          },
+          {
+            "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/4D070507B5530910M-PP1794048007IN",
+            "rel": "replace",
+            "method": "PUT",
+            "encType": "application/json"
+          },
+          {
+            "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/4D070507B5530910M-PP1794048007IN",
+            "rel": "edit",
+            "method": "PATCH",
+            "encType": "application/json"
+          }
+        ]
+      }
+    ],
+    "links": []
+  }
+}

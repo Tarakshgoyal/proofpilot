@@ -172,13 +172,21 @@ def step_dispute() -> None:
         raise SystemExit("PAYPAL_BUYER_EMAIL not set in .env.")
     value, currency = money()
     assertion = build_auth_assertion(os.environ["PAYPAL_CLIENT_ID"], buyer_email)
+    # Documented shape (developer.paypal.com/disputes/test-go-live): the create
+    # call is multipart/form-data with the JSON in a part named `input`.
+    dispute_input = {
+        "disputed_transactions": [{"seller_transaction_id": capture_id}],
+        "reason": REASON,
+        "dispute_amount": {"currency_code": currency, "value": value},
+        "extensions": {
+            "merchant_contacted": True,
+            "merchant_contacted_outcome": "NO_RESPONSE",
+            "merchandize_dispute_properties": {"issue_type": "PRODUCT"},
+        },
+    }
     body = client().request(
         "POST", "/v1/customer/disputes",
-        json_body={
-            "disputed_transactions": [{"seller_transaction_id": capture_id}],
-            "reason": REASON,
-            "dispute_amount": {"currency_code": currency, "value": value},
-        },
+        files={"input": (None, json.dumps(dispute_input), "application/json")},
         auth_assertion=assertion,
         step="06_dispute_create",
         note=f"buyer {buyer_email} disputes capture {capture_id} ({REASON})",

@@ -1,0 +1,12 @@
+{
+  "step": "06_dispute_create",
+  "recorded_at": "2026-11-07T10:42:25Z",
+  "method": "POST",
+  "url": "https://api-m.sandbox.paypal.com/v1/customer/disputes",
+  "status": 400,
+  "note": "buyer sb-41krp53770489@personal.example.com disputes capture 4D070507B5530910M (MERCHANDISE_OR_SERVICE_NOT_RECEIVED)",
+  "body": {
+    "error": "invalid_request",
+    "error_description": "No permissions to set target_client_id"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "step": "03_order_capture",
+  "recorded_at": "2026-11-07T10:40:06Z",
+  "method": "POST",
+  "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/93561518JU2949457/capture",
+  "status": 201,
+  "note": "",
+  "body": {
+    "id": "93561518JU2949457",
+    "status": "COMPLETED",
+    "payment_source": {
+      "paypal": {
+        "email_address": "sb-41krp53770489@personal.example.com",
+        "account_id": "HVYDNJYKT5FUA",
+        "account_status": "VERIFIED",
+        "name": {
+          "given_name": "John",
+          "surname": "Doe"
+        },
+        "address": {
+          "country_code": "US"
+        }
+      }
+    },
+    "purchase_units": [
+      {
+        "reference_id": "pp-demo-001",
+        "shipping": {
+          "name": {
+            "full_name": "John Doe"
+          },
+          "address": {
+            "address_line_1": "2211 N First St",
+            "admin_area_2": "San Jose",
+            "admin_area_1": "CA",
+            "postal_code": "95131",
+            "country_code": "US"
+          }
+        },
+        "payments": {
+          "captures": [
+            {
+              "id": "4D070507B5530910M",
+              "status": "COMPLETED",
+              "amount": {
+                "currency_code": "USD",
+                "value": "25.00"
+              },
+              "final_capture": true,
+              "seller_protection": {
+                "status": "ELIGIBLE",
+                "dispute_categories": [
+                  "ITEM_NOT_RECEIVED",
+                  "UNAUTHORIZED_TRANSACTION"
+                ]
+              },
+              "seller_receivable_breakdown": {
+                "gross_amount": {
+                  "currency_code": "USD",
+                  "value": "25.00"
+                },
+                "paypal_fee": {
+                  "currency_code": "USD",
+                  "value": "1.51"
+                },
+                "net_amount": {
+                  "currency_code": "USD",
+                  "value": "23.49"
+                }
+              },
+              "links": [
+                {
+                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/4D070507B5530910M",
+                  "rel": "self",
+                  "method": "GET"
+                },
+                {
+                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/4D070507B5530910M/refund",
+                  "rel": "refund",
+                  "method": "POST"
+                },
+                {
+                  "href": "https://api.sandbox.paypal.com/v2/checkout/orders/93561518JU2949457",
+                  "rel": "up",
+                  "method": "GET"
+                }
+              ],
+              "create_time": "2026-11-07T10:40:04Z",
+              "update_time": "2026-11-07T10:40:04Z"
+            }
+          ]
+        }
+      }
+    ],
+    "payer": {
+      "name": {
+        "given_name": "John",
+        "surname": "Doe"
+      },
+      "email_address": "sb-41krp53770489@personal.example.com",
+      "payer_id": "HVYDNJYKT5FUA",
+      "address": {
+        "country_code": "US"
+      }
+    },
+    "links": [
+      {
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/93561518JU2949457",
+        "rel": "self",
+        "method": "GET"
+      }
+    ]
+  }
+}
