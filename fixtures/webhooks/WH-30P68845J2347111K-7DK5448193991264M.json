@@ -1,0 +1,105 @@
+{
+  "received_at": "2026-11-07T10:53:35Z",
+  "event_id": "WH-30P68845J2347111K-7DK5448193991264M",
+  "event_type": "CUSTOMER.DISPUTE.UPDATED",
+  "verified": false,
+  "verification_error": "PAYPAL_WEBHOOK_ID not configured",
+  "headers": {
+    "paypal-transmission-id": "7a6f932f-da99-11f1-8118-015b32e31636",
+    "paypal-transmission-time": "2026-11-07T10:53:34Z",
+    "paypal-transmission-sig": "Yw8VW3dNFHj6j8xvUH6LAXPVBDmis3XGUxx2uTt7YwRI/CvBuUyrClrsgnf3IZTeAlZjQZka07DoEU0Rmp6yRRniFl8nf/jF2D3kOShFsKD10GbH6hoKNnJG1ohl7aIcQSuJPLgUQ8n86rGmMiDtYP+VpmiA1UM2m0EeMkjdLZV9fim3nQoH9RR2asE7rTNQQyqHV4V3oWvngyW/MutYfJF+9lB9gMm5ewZNM1GSfrLA8IjBFjUTM2Clz3IkKoUelXMUUQ7LughOnqlv4sKrHVHH5Xo0qVL8lOVamQht+JOOD6pBtQ7C5Aw32K1InA2dPSXFOR6Wz18yLwTtvcTfvw==",
+    "paypal-cert-url": "https://api.sandbox.paypal.com/v1/notifications/certs/CERT-360caa42-fca2a594-9eaebfdf",
+    "paypal-auth-algo": "SHA256withRSA"
+  },
+  "body": {
+    "id": "WH-30P68845J2347111K-7DK5448193991264M",
+    "event_version": "1.0",
+    "create_time": "2026-11-07T10:53:33.384Z",
+    "resource_type": "dispute",
+    "event_type": "CUSTOMER.DISPUTE.UPDATED",
+    "summary": "A dispute was updated with case # PP-R-KNZ-10196979",
+    "resource": {
+      "dispute_id": "PP-R-KNZ-10196979",
+      "create_time": "2026-11-07T10:49:49.386Z",
+      "update_time": "2026-11-07T10:53:03.893Z",
+      "disputed_transactions": [
+        {
+          "buyer_transaction_id": "1AL72229EK240684F",
+          "seller_transaction_id": "4D070507B5530910M",
+          "transaction_status": "HELD",
+          "seller": {
+            "merchant_id": "N999U2WKXLHAA",
+            "name": "Test Store"
+          },
+          "items": [
+            {
+              "item_name": "ProofPilot demo widget",
+              "item_description": "ProofPilot demo widget",
+              "item_quantity": "1",
+              "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+              "item_type": "SERVICE"
+            }
+          ],
+          "seller_protection_eligible": true,
+          "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+        }
+      ],
+      "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+      "status": "UNDER_REVIEW",
+      "dispute_amount": {
+        "currency_code": "USD",
+        "value": "25.00"
+      },
+      "fund_movements": [
+        {
+          "party": "RECEIVER",
+          "amount": {
+            "currency_code": "USD",
+            "value": "23.49"
+          },
+          "initiated_time": "2026-11-07T10:52:39.000Z",
+          "type": "DEBIT",
+          "reason": "HOLD_PLACED"
+        }
+      ],
+      "dispute_life_cycle_stage": "CHARGEBACK",
+      "dispute_channel": "INTERNAL",
+      "offer": {
+        "buyer_requested_amount": {
+          "currency_code": "USD",
+          "value": "25.00"
+        }
+      },
+      "refund_details": {
+        "allowed_refund_amount": {
+          "currency_code": "USD",
+          "value": "25.00"
+        }
+      },
+      "links": [
+        {
+          "href": "https://api.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "https://api.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979/provide-supporting-info",
+          "rel": "provide_supporting_info",
+          "method": "POST"
+        }
+      ]
+    },
+    "links": [
+      {
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks-events/WH-30P68845J2347111K-7DK5448193991264M",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks-events/WH-30P68845J2347111K-7DK5448193991264M/resend",
+        "rel": "resend",
+        "method": "POST"
+      }
+    ]
+  }
+}

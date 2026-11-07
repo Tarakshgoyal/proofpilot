@@ -1,0 +1,17 @@
+{
+  "step": "08_provide-supporting-info_supporting_document",
+  "recorded_at": "2026-11-07T10:56:51Z",
+  "method": "POST",
+  "url": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979/provide-supporting-info",
+  "status": 200,
+  "note": "PROOF_OF_FULFILLMENT + evidence_fulfillment.pdf",
+  "body": {
+    "links": [
+      {
+        "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979",
+        "rel": "detail",
+        "method": "GET"
+      }
+    ]
+  }
+}

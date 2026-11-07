@@ -227,6 +227,24 @@ def print_dispute(d: dict, c: PayPalClient) -> None:
     print(f"  links (actions)  : {c.available_actions(d)}")
 
 
+def step_require_evidence() -> None:
+    """Sandbox-only lever: flips UNDER_REVIEW -> WAITING_FOR_SELLER_RESPONSE."""
+    banner("STEP 4b — Require evidence from seller (sandbox-only)")
+    state = load_state()
+    dispute_id = state.get("dispute_id")
+    if not dispute_id:
+        raise SystemExit("No dispute_id in state.")
+    if os.getenv("PAYPAL_ENV", "sandbox") != "sandbox":
+        raise SystemExit("Refusing: sandbox-only operation outside sandbox.")
+    body = client().request(
+        "POST", f"/v1/customer/disputes/{dispute_id}/require-evidence",
+        json_body={"action": "SELLER_EVIDENCE"},
+        step="06b_require_evidence",
+        note="sandbox test tool; surfaces the provide-evidence action",
+    )
+    print(f"  require-evidence sent -> {json.dumps(body)[:300]}")
+
+
 def step_wait_ready() -> None:
     banner("STEP 5 — Wait until seller can act (WAITING_FOR_SELLER_RESPONSE)")
     state = load_state()
@@ -273,13 +291,32 @@ def build_evidence_pdf() -> Path:
 
 
 def step_evidence() -> None:
+    """Submit evidence through whichever action the dispute's HATEOAS links allow.
+
+    - INQUIRY/WAITING_FOR_SELLER_RESPONSE -> provide-evidence (input + file)
+    - CHARGEBACK/UNDER_REVIEW              -> provide-supporting-info
+                                              (input + 'supporting document')
+    The link present on the dispute decides; we never blind-post.
+    """
     banner("STEP 6 — Provide evidence (multipart, merchant)")
     state = load_state()
     dispute_id = state.get("dispute_id")
     if not dispute_id:
         raise SystemExit("No dispute_id in state — run `dispute` first.")
+    c = client()
+    dispute = c.request("GET", f"/v1/customer/disputes/{dispute_id}")
+    has_provide = c.link(dispute, "provide-evidence") is not None
+    has_supporting = c.link(dispute, "provide-supporting-info") is not None
+    if not (has_provide or has_supporting):
+        raise SystemExit(
+            f"No evidence action available (status={dispute.get('status')}, "
+            f"links={c.available_actions(dispute)}). Run `require-evidence` or `wait-ready` first."
+        )
+    endpoint = "provide-evidence" if has_provide else "provide-supporting-info"
     pdf = build_evidence_pdf()
     print(f"evidence pdf : {pdf.relative_to(ROOT)}")
+    print(f"action       : {endpoint}  (status={dispute.get('status')}, "
+          f"stage={dispute.get('dispute_life_cycle_stage')})")
 
     input_json = {
         "evidence_type": "PROOF_OF_FULFILLMENT",
@@ -289,30 +326,27 @@ def step_evidence() -> None:
         }],
         "notes": "Carrier record confirms shipment and delivery to the buyer's confirmed address.",
     }
-    c = client()
-    payload = ("input", (None, json.dumps(input_json), "application/json"))
-
-    # PayPal docs use part name `file`; the OpenAPI spec names it `evidence-file`.
-    # Try the documented one, fall back to the spec name on a 400.
-    for file_part in ("file", "evidence-file"):
+    file_part_names = (["file", "evidence-file"] if has_provide
+                       else ["supporting document", "file"])
+    for file_part in file_part_names:
         try:
             with open(pdf, "rb") as fh:
                 body = c.request(
-                    "POST", f"/v1/customer/disputes/{dispute_id}/provide-evidence",
-                    files={"input": payload, file_part: ("evidence_fulfillment.pdf", fh,
-                                                         "application/pdf")},
-                    step=f"08_provide_evidence_{file_part.replace('-', '_')}",
+                    "POST", f"/v1/customer/disputes/{dispute_id}/{endpoint}",
+                    files={
+                        "input": (None, json.dumps(input_json), "application/json"),
+                        file_part: ("evidence_fulfillment.pdf", fh, "application/pdf"),
+                    },
+                    step=f"08_{endpoint}_{file_part.replace(' ', '_').replace('-', '_')}",
                     note=f"PROOF_OF_FULFILLMENT + {pdf.name}",
                 )
-            print(f"  submitted (part '{file_part}') -> see links below")
+            print(f"  submitted via '{file_part}' -> success")
             print_dispute(body, c)
             return
         except PayPalError as err:
-            print(f"  part '{file_part}' rejected: {err}")
-            if file_part == "file":
-                print("  retrying with spec part name 'evidence-file' ...")
-                continue
-            raise
+            print(f"  part '{file_part}' rejected: {str(err)[:160]}")
+            continue
+    raise SystemExit("All file part names rejected — paste the last error to debug.")
 
 def step_wait_under_review() -> None:
     banner("STEP 6b — Wait for UNDER_REVIEW (needed before adjudicate)")
@@ -371,8 +405,9 @@ def step_all() -> None:
 
 STEPS = {
     "check": step_check, "order": step_order, "capture": step_capture,
-    "tracker": step_tracker, "dispute": step_dispute, "wait-ready": step_wait_ready,
-    "evidence": step_evidence, "wait-under-review": step_wait_under_review,
+    "tracker": step_tracker, "dispute": step_dispute, "require-evidence": step_require_evidence,
+    "wait-ready": step_wait_ready, "evidence": step_evidence,
+    "wait-under-review": step_wait_under_review,
     "adjudicate": step_adjudicate, "show": step_show, "all": step_all,
 }
 

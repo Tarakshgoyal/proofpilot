@@ -1,0 +1,15 @@
+{
+  "step": "06b_require_evidence",
+  "recorded_at": "2026-11-07T10:55:43Z",
+  "method": "POST",
+  "url": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979/require-evidence",
+  "status": 415,
+  "note": "",
+  "body": {
+    "name": "UNSUPPORTED_MEDIA_TYPE",
+    "message": "The server does not support the request payload\u2019s media type.",
+    "debug_id": "f9385456ad7d6",
+    "details": [],
+    "links": []
+  }
+}

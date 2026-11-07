@@ -138,8 +138,11 @@ class PayPalClient:
     # -------------------------------------------------- disputes convenience
     @staticmethod
     def link(dispute_or_body: dict, rel: str) -> dict | None:
+        """Find a HATEOAS link by rel, tolerant of -/_ separator differences
+        (PayPal uses e.g. `provide_supporting_info` in links but hyphens in paths)."""
+        wanted = rel.replace("-", "_")
         for lnk in dispute_or_body.get("links", []):
-            if lnk.get("rel") == rel:
+            if str(lnk.get("rel", "")).replace("-", "_") == wanted:
                 return lnk
         return None
 

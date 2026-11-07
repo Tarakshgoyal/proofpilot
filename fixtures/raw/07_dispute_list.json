@@ -1,0 +1,23 @@
+{
+  "step": "07_dispute_list",
+  "recorded_at": "2026-11-07T10:51:23Z",
+  "method": "GET",
+  "url": "https://api-m.sandbox.paypal.com/v1/customer/disputes?page_size=20",
+  "status": 200,
+  "note": "",
+  "body": {
+    "items": [],
+    "links": [
+      {
+        "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes?page_size=20",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes?page_size=20",
+        "rel": "first",
+        "method": "GET"
+      }
+    ]
+  }
+}
