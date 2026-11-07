@@ -1,13 +1,13 @@
 {
   "step": "90_webhook_create",
-  "recorded_at": "2026-11-07T10:23:34Z",
+  "recorded_at": "2026-11-07T12:35:43Z",
   "method": "POST",
   "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks",
   "status": 201,
-  "note": "url=https://6b1b-106-219-150-230.ngrok-free.app/webhooks/paypal",
+  "note": "url=https://proofpilot-lbpd.onrender.com/webhooks/paypal",
   "body": {
-    "id": "8D77656527624033J",
-    "url": "https://6b1b-106-219-150-230.ngrok-free.app/webhooks/paypal",
+    "id": "63F69942X65782257",
+    "url": "https://proofpilot-lbpd.onrender.com/webhooks/paypal",
     "event_types": [
       {
         "name": "CUSTOMER.DISPUTE.CREATED",
@@ -24,17 +24,17 @@
     ],
     "links": [
       {
-        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks/8D77656527624033J",
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks/63F69942X65782257",
         "rel": "self",
         "method": "GET"
       },
       {
-        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks/8D77656527624033J",
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks/63F69942X65782257",
         "rel": "update",
         "method": "PATCH"
       },
       {
-        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks/8D77656527624033J",
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks/63F69942X65782257",
         "rel": "delete",
         "method": "DELETE"
       }

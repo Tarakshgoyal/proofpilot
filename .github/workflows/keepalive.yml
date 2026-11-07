@@ -12,6 +12,6 @@ jobs:
     steps:
       - name: Ping health endpoint
         run: |
-          URL="${{ vars.RENDER_URL }}/api/health"
+          URL="${{ vars.RENDER_URL || 'https://proofpilot-lbpd.onrender.com' }}/api/health"
           echo "pinging $URL"
           curl -fsS --max-time 60 "$URL" && echo " OK" || echo " FAILED (non-fatal)"

@@ -1,0 +1,11 @@
+{
+  "step": "92_webhook_delete",
+  "recorded_at": "2026-11-07T12:35:40Z",
+  "method": "DELETE",
+  "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/8D77656527624033J",
+  "status": 204,
+  "note": "",
+  "body": {
+    "raw": ""
+  }
+}
