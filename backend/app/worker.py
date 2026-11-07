@@ -17,7 +17,7 @@ from .collector import collect_case, snapshot_hash, upsert_case_from_dispute
 from .db import SessionLocal, init_db
 from .docs_pipeline import parse_pdf
 from .gateway import get_gateway
-from .models import Case, Document, Job, Span
+from .models import Action, Case, Document, Job, Span
 
 LEASE_MINUTES = 5
 POLL_SECONDS = 2.0
@@ -73,6 +73,13 @@ def handle_sync_disputes(session, payload: dict) -> dict:
         dispute = gateway.get_dispute(dispute_id)
         case, changed = upsert_case_from_dispute(session, dispute)
         session.commit()
+        if changed:
+            from .execute import mark_stale_plans
+
+            stale = mark_stale_plans(session, case, "dispute snapshot changed on re-sync")
+            session.commit()
+            results.setdefault("plans_staled", 0)
+            results["plans_staled"] += stale
         enqueue(session, "collect_case", {"case_id": case.id, "dispute_id": dispute_id})
         results["collected"] += 1
         results["changed"] += int(changed)
@@ -113,13 +120,30 @@ def handle_investigate(session, payload: dict) -> dict:
     if case is None:
         return {"error": "case_not_found"}
     from .agent import run_agent
+    from .decide import decide
     from .verify import run_verifier
 
     analysis = run_agent(session, case)
     verdict = run_verifier(session, case)
+    decision = decide(session, case)
     session.commit()
     return {"analysis": analysis.status, "action": analysis.recommended_action,
+            "p_win": decision.p_win, "decision": decision.recommended_action,
             **verdict}
+
+
+def handle_execute_plan(session, payload: dict) -> dict:
+    from .execute import execute_action
+
+    action = session.get(Action, payload["action_id"]) if "action_id" in payload else \
+        session.scalar(sa.select(Action).where(
+            Action.plan_id == payload.get("plan_id"),
+            Action.action_type == "submit_evidence"))
+    if action is None:
+        return {"error": "action_not_found"}
+    result = execute_action(session, action)
+    session.commit()
+    return result
 
 
 HANDLERS = {
@@ -127,6 +151,7 @@ HANDLERS = {
     "collect_case": handle_collect_case,
     "parse_document": handle_parse_document,
     "investigate": handle_investigate,
+    "execute_plan": handle_execute_plan,
 }
 
 

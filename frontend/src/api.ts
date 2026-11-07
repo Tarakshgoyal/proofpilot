@@ -60,3 +60,69 @@ export async function fetchProposal(caseId: string): Promise<Proposal> {
 export async function analyseCase(caseId: string): Promise<void> {
   await fetch(`/api/cases/${caseId}/analyse`, { method: 'POST' })
 }
+
+export interface Decision {
+  recommendedAction: string
+  pWin: number
+  evFightMinor: number
+  evFoldMinor: number
+  rationale: string
+}
+
+export interface PlanOut {
+  id: string
+  caseId: string
+  version: number
+  status: string
+  payload: any
+  payloadHash: string
+  packetHash: string
+  action?: ActionOut | null
+}
+
+export interface ActionOut {
+  id: string
+  planId: string
+  actionType: string
+  status: string
+  response: any
+  executedAt: string | null
+}
+
+export interface AuditOut {
+  verification: { valid: boolean; entries?: number; head?: string; reason?: string }
+  entries: { seq: number; actor: string; event: string; payload: any; hash: string }[]
+}
+
+export const fetchDecision = (id: string) =>
+  fetch(`/api/cases/${id}/decision`).then(r => r.json() as Promise<Decision>)
+
+export const buildPlan = (id: string) =>
+  fetch(`/api/cases/${id}/plan`, { method: 'POST' }).then(async r => {
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText)
+    return r.json() as Promise<PlanOut>
+  })
+
+export const approvePlan = (planId: string, expectedPlanHash: string, expectedCaseVersion: number) =>
+  fetch(`/api/plans/${planId}/approve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ expectedPlanHash, expectedCaseVersion, approver: 'merchant' }),
+  }).then(async r => {
+    const body = await r.json()
+    if (!r.ok) throw new Error(body.detail || r.statusText)
+    return body as { plan: PlanOut; action: ActionOut | null }
+  })
+
+export const fetchAction = (id: string) =>
+  fetch(`/api/actions/${id}`).then(r => r.json() as Promise<ActionOut>)
+
+export const fetchAudit = (caseId: string) =>
+  fetch(`/api/cases/${caseId}/audit`).then(r => r.json() as Promise<AuditOut>)
+
+export const locate = (docId: string, quote: string) =>
+  fetch(`/api/documents/${docId}/locate?quote=${encodeURIComponent(quote)}`)
+    .then(r => r.json() as Promise<{ found: boolean; page?: number; box?: number[]; matchType?: string }>)
+
+export const fetchLatestPlan = (caseId: string) =>
+  fetch(`/api/cases/${caseId}/plan`).then(r => r.json() as Promise<PlanOut | {}>)

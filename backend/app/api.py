@@ -19,7 +19,8 @@ from fastapi.responses import FileResponse
 
 from .db import SessionLocal
 from .docs_pipeline import STORAGE, find_quote, persist_document
-from .models import Analysis, Case, Claim, Contradiction, Document, Fact, Job, Span
+from .models import (Action, Analysis, AuditLog, Case, Claim, Contradiction,
+                     Decision, Document, Fact, Job, Plan, Span)
 from .worker import enqueue
 
 router = APIRouter(prefix="/api")
@@ -152,6 +153,28 @@ def locate_quote(document_id: str, quote: str):
                 "spanIds": hit.span_ids}
 
 
+@router.get("/documents/{document_id}/page/{page_no}")
+def get_page_image(document_id: str, page_no: int):
+    """Render one PDF page to PNG (PyMuPDF) for the provenance viewer."""
+    from fastapi.responses import Response
+
+    with SessionLocal() as session:
+        doc = session.get(Document, document_id)
+        if doc is None:
+            raise HTTPException(404, "document not found")
+    data = open(doc.storage_path, "rb").read()
+    try:
+        from .docs_pipeline import parse_pdf  # noqa: F401 — ensure pymupdf import path
+        import pymupdf
+
+        pdf = pymupdf.open(stream=data, filetype="pdf")
+        page = pdf[page_no - 1]
+        pix = page.get_pixmap(dpi=150)
+        return Response(pix.tobytes("png"), media_type="image/png")
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(500, f"render failed: {exc}")
+
+
 @router.get("/documents/{document_id}/file")
 def get_file(document_id: str):
     with SessionLocal() as session:
@@ -205,6 +228,130 @@ def get_proposal(case_id: str):
         }
 
 
+@router.get("/cases/{case_id}/plan")
+def get_latest_plan(case_id: str):
+    """Latest plan (with its action) for the case panel to restore state."""
+    with SessionLocal() as session:
+        case = _case_or_404(session, case_id)
+        plan = session.scalar(sa.select(Plan).where(Plan.case_id == case.id)
+                              .order_by(Plan.version.desc()).limit(1))
+        if plan is None:
+            return {}
+        action = session.scalar(sa.select(Action).where(Action.plan_id == plan.id))
+        return {**_plan_out(plan), "action": None if action is None else _action_out(action)}
+
+
+@router.post("/cases/{case_id}/plan")
+def create_plan(case_id: str):
+    """Build the next immutable plan version (hash-bound, packet attached)."""
+    with SessionLocal() as session:
+        case = _case_or_404(session, case_id)
+        try:
+            from .execute import build_plan
+
+            plan = build_plan(session, case)
+            session.commit()
+        except ValueError as exc:
+            raise HTTPException(409, str(exc))
+        return _plan_out(plan), 201
+
+
+@router.get("/plans/{plan_id}")
+def get_plan(plan_id: str):
+    with SessionLocal() as session:
+        plan = _plan_or_404(session, plan_id)
+        action = session.scalar(sa.select(Action).where(Action.plan_id == plan.id))
+        return {**_plan_out(plan), "action": None if action is None else _action_out(action)}
+
+
+@router.post("/plans/{plan_id}/approve")
+def approve_plan(plan_id: str, body: dict):
+    """Hash+version-bound approval. Idempotent replays return the same action."""
+    with SessionLocal() as session:
+        plan = _plan_or_404(session, plan_id)
+        try:
+            from .execute import approve_plan as do_approve
+
+            plan, action = do_approve(
+                session, plan, approver=body.get("approver", "merchant"),
+                expected_plan_hash=body.get("expectedPlanHash", ""),
+                expected_case_version=int(body.get("expectedCaseVersion", -1)))
+            session.commit()
+        except ValueError as exc:
+            session.commit()
+            raise HTTPException(409, str(exc))
+        if action is not None and action.status == "QUEUED":
+            enqueue(session, "execute_plan", {"action_id": action.id}, dedupe=True)
+            session.commit()
+        return {"plan": _plan_out(plan),
+                "action": None if action is None else _action_out(action)}
+
+
+@router.post("/plans/{plan_id}/reject")
+def reject_plan(plan_id: str, body: dict):
+    with SessionLocal() as session:
+        plan = _plan_or_404(session, plan_id)
+        plan.status = "REJECTED"
+        from .execute import audit
+
+        audit(session, plan.case_id, body.get("approver", "merchant"), "plan_rejected",
+              {"plan_id": plan.id, "reason": body.get("reason", "")})
+        session.commit()
+        return _plan_out(plan)
+
+
+@router.get("/plans/{plan_id}/packet")
+def get_packet(plan_id: str):
+    from fastapi.responses import Response
+
+    with SessionLocal() as session:
+        plan = _plan_or_404(session, plan_id)
+        from .packet import STORAGE
+
+        path = STORAGE / f"{plan.case_id}_{plan.payload.get('case_version')}.pdf"
+        if not path.exists():
+            raise HTTPException(404, "packet not built")
+        return Response(path.read_bytes(), media_type="application/pdf",
+                        headers={"Content-Disposition":
+                                 f'attachment; filename="packet_{plan.id[:8]}.pdf"'})
+
+
+@router.get("/actions/{action_id}")
+def get_action(action_id: str):
+    with SessionLocal() as session:
+        action = session.get(Action, action_id)
+        if action is None:
+            raise HTTPException(404, "action not found")
+        return _action_out(action)
+
+
+@router.get("/cases/{case_id}/audit")
+def get_audit(case_id: str):
+    with SessionLocal() as session:
+        case = _case_or_404(session, case_id)
+        from .execute import verify_chain
+
+        rows = session.scalars(sa.select(AuditLog).where(AuditLog.case_id == case.id)
+                               .order_by(AuditLog.seq)).all()
+        return {"verification": verify_chain(session, case.id),
+                "entries": [{"seq": r.seq, "at": None, "actor": r.actor,
+                             "event": r.event, "payload": r.payload,
+                             "hash": r.hash[:16] + "…"} for r in rows]}
+
+
+@router.get("/cases/{case_id}/decision")
+def get_decision(case_id: str):
+    with SessionLocal() as session:
+        case = _case_or_404(session, case_id)
+        d = session.scalar(sa.select(Decision).where(Decision.case_id == case.id)
+                           .order_by(Decision.created_at.desc()))
+        return {} if d is None else {
+            "recommendedAction": d.recommended_action, "pWin": d.p_win,
+            "evFightMinor": d.ev_fight, "evFoldMinor": d.ev_fold,
+            "rationale": d.rationale, "model": d.model,
+        }
+
+
 @router.get("/jobs/{job_id}")
 def get_job(job_id: str):
     with SessionLocal() as session:
@@ -235,3 +382,24 @@ def _doc_out(d: Document) -> dict:
     return {"id": d.id, "filename": d.filename, "docType": d.doc_type,
             "origin": d.origin, "sha256": d.sha256, "pages": d.pages,
             "parsed": bool(d.parsed_at), "parseError": d.parse_error or None}
+
+
+def _plan_or_404(session, plan_id: str) -> Plan:
+    plan = session.get(Plan, plan_id)
+    if plan is None:
+        raise HTTPException(404, "plan not found")
+    return plan
+
+
+def _plan_out(p: Plan) -> dict:
+    return {"id": p.id, "caseId": p.case_id, "version": p.version,
+            "status": p.status, "payload": p.payload,
+            "payloadHash": p.payload_hash, "packetHash": p.packet_hash,
+            "createdAt": p.created_at.isoformat() if p.created_at else None}
+
+
+def _action_out(a: Action) -> dict:
+    return {"id": a.id, "planId": a.plan_id, "actionType": a.action_type,
+            "status": a.status, "response": a.response,
+            "idempotencyKey": a.idempotency_key,
+            "executedAt": a.executed_at.isoformat() if a.executed_at else None}

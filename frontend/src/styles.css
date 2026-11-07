@@ -26,3 +26,20 @@ header .dim { color: #94a3b8; font-weight: 400; }
 :global(.row-hot) { background: #fff1f2 !important; }
 :global(.hot) { color: #b91c1c !important; font-weight: 700; }
 h4 { margin: 14px 0 6px; }
+
+.decision { background: #eef2ff; border: 1px solid #a5b4fc; border-radius: 8px; padding: 8px 12px; margin: 8px 0; }
+.plan { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+.plan code, .audit code { font-size: 11px; color: #475569; }
+.receipt { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 10px; }
+.audit { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); display: flex; align-items: center; justify-content: center; z-index: 50; }
+.modal { background: #fff; border-radius: 12px; padding: 18px 20px; max-width: 640px; width: 92%; max-height: 88vh; overflow: auto; }
+.modal pre { background: #0f172a; color: #e2e8f0; padding: 10px; border-radius: 8px; font-size: 11px; overflow: auto; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+button.approve { background: #0f172a; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+button.approve:disabled { opacity: 0.6; }
+.linklike { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 12px; padding: 0 4px; }
+.pdf-modal { max-width: 760px; width: 94%; }
+.pdf-wrap { position: relative; background: #e2e8f0; border-radius: 8px; padding: 8px; overflow: auto; max-height: 70vh; }
+.highlight-box { position: absolute; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.25); border-radius: 2px; pointer-events: none; }
+.quote-bar { margin: 6px 0; }

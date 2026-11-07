@@ -44,6 +44,10 @@ RULES (absolute):
    POLICY_QUOTE, ITEM_AS_LISTED, DOC_QUOTE, OTHER.
 5. A DOC_QUOTE/POLICY_QUOTE/ITEM_AS_LISTED claim must include document_id and
    an EXACT verbatim quote copied from that document's excerpt.
+6. When a DOCUMENT EXCERPT supports a claim, prefer expressing it as a
+   DOC_QUOTE claim with the exact quote — verbatim document citations are
+   the strongest evidence. (The policy text below is NOT a document; cite it
+   via facts only.)
 
 Reply with ONE JSON object, no prose:
 {

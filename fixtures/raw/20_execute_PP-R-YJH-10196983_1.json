@@ -1,0 +1,17 @@
+{
+  "step": "20_execute_PP-R-YJH-10196983_1",
+  "recorded_at": "2026-11-07T15:59:06Z",
+  "method": "POST",
+  "url": "provide-supporting-info",
+  "status": 200,
+  "note": "plan e64b4353-a9a0-4f3f-b85b-e3601e17eb9e v1 via provide-supporting-info",
+  "body": {
+    "links": [
+      {
+        "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-YJH-10196983",
+        "rel": "detail",
+        "method": "GET"
+      }
+    ]
+  }
+}
