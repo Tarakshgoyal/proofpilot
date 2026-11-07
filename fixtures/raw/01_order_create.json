@@ -1,31 +1,31 @@
 {
   "step": "01_order_create",
-  "recorded_at": "2026-11-07T10:59:50Z",
+  "recorded_at": "2026-11-07T11:16:17Z",
   "method": "POST",
   "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders",
   "status": 201,
   "note": "",
   "body": {
-    "id": "9CV60035LJ4855621",
+    "id": "49U69544PP3021946",
     "status": "CREATED",
     "links": [
       {
-        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621",
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946",
         "rel": "self",
         "method": "GET"
       },
       {
-        "href": "https://www.sandbox.paypal.com/checkoutnow?token=9CV60035LJ4855621",
+        "href": "https://www.sandbox.paypal.com/checkoutnow?token=49U69544PP3021946",
         "rel": "approve",
         "method": "GET"
       },
       {
-        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621",
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946",
         "rel": "update",
         "method": "PATCH"
       },
       {
-        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621/capture",
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946/capture",
         "rel": "capture",
         "method": "POST"
       }

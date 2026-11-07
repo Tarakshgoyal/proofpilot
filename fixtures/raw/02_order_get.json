@@ -1,12 +1,12 @@
 {
   "step": "02_order_get",
-  "recorded_at": "2026-11-07T11:09:07Z",
+  "recorded_at": "2026-11-07T11:24:55Z",
   "method": "GET",
-  "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621",
+  "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946",
   "status": 200,
   "note": "",
   "body": {
-    "id": "9CV60035LJ4855621",
+    "id": "49U69544PP3021946",
     "intent": "CAPTURE",
     "status": "APPROVED",
     "payment_source": {
@@ -64,20 +64,20 @@
         "country_code": "US"
       }
     },
-    "create_time": "2026-11-07T10:59:50Z",
+    "create_time": "2026-11-07T11:16:17Z",
     "links": [
       {
-        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621",
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946",
         "rel": "self",
         "method": "GET"
       },
       {
-        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621",
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946",
         "rel": "update",
         "method": "PATCH"
       },
       {
-        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621/capture",
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946/capture",
         "rel": "capture",
         "method": "POST"
       }

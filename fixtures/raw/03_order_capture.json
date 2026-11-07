@@ -1,12 +1,12 @@
 {
   "step": "03_order_capture",
-  "recorded_at": "2026-11-07T11:09:11Z",
+  "recorded_at": "2026-11-07T11:24:59Z",
   "method": "POST",
-  "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621/capture",
+  "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946/capture",
   "status": 201,
   "note": "",
   "body": {
-    "id": "9CV60035LJ4855621",
+    "id": "49U69544PP3021946",
     "status": "COMPLETED",
     "payment_source": {
       "paypal": {
@@ -40,7 +40,7 @@
         "payments": {
           "captures": [
             {
-              "id": "4UM93153F2793482K",
+              "id": "9C6191441M4165506",
               "status": "COMPLETED",
               "amount": {
                 "currency_code": "USD",
@@ -70,23 +70,23 @@
               },
               "links": [
                 {
-                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/4UM93153F2793482K",
+                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/9C6191441M4165506",
                   "rel": "self",
                   "method": "GET"
                 },
                 {
-                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/4UM93153F2793482K/refund",
+                  "href": "https://api.sandbox.paypal.com/v2/payments/captures/9C6191441M4165506/refund",
                   "rel": "refund",
                   "method": "POST"
                 },
                 {
-                  "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621",
+                  "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946",
                   "rel": "up",
                   "method": "GET"
                 }
               ],
-              "create_time": "2026-11-07T11:09:09Z",
-              "update_time": "2026-11-07T11:09:09Z"
+              "create_time": "2026-11-07T11:24:58Z",
+              "update_time": "2026-11-07T11:24:58Z"
             }
           ]
         }
@@ -105,7 +105,7 @@
     },
     "links": [
       {
-        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/9CV60035LJ4855621",
+        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/49U69544PP3021946",
         "rel": "self",
         "method": "GET"
       }

@@ -1,0 +1,88 @@
+{
+  "received_at": "2026-11-07T11:15:08Z",
+  "event_id": "WH-4FT78283RM7104847-24A0708226357783N",
+  "event_type": "CUSTOMER.DISPUTE.CREATED",
+  "verified": true,
+  "verification_error": null,
+  "headers": {
+    "paypal-transmission-id": "7b8f5411-da9c-11f1-ae6a-7757b2bc0b8b",
+    "paypal-transmission-time": "2026-11-07T11:15:04Z",
+    "paypal-transmission-sig": "ExLcw78yXsUBtp3Pv6aXZ36+L3x8RiXrRyGqNHR23LwH+mMZ5jZE901R8DOrOQgsn9NHvpitdg3bx31cY6xpK299zG9TaluYJNoxibRcJnIDILwPZHEgZOmfXYqs0S6QwB0tsJnttp/blcIqSOfR/34d0FjapCX4OU8A8S5jovE1wOpGeO6txp7wXK963qoUwT38/KrDTRMwQjIHUuIbXVqbpp4NZvmzL6Z1MEpHIaIRaUPkOvXQUI6abdalbHcOAfUDrdIqrWtUSd3sPAYvp1btTI2SzMJfITFLt1uCjPBjOY4MFuyj9n3kzuCEBu8VNd29GyFLuHuvuySIfUC30A==",
+    "paypal-cert-url": "https://api.sandbox.paypal.com/v1/notifications/certs/CERT-360caa42-fca2a594-9eaebfdf",
+    "paypal-auth-algo": "SHA256withRSA"
+  },
+  "body": {
+    "id": "WH-4FT78283RM7104847-24A0708226357783N",
+    "event_version": "1.0",
+    "create_time": "2026-11-07T11:15:03.837Z",
+    "resource_type": "dispute",
+    "event_type": "CUSTOMER.DISPUTE.CREATED",
+    "summary": "A new dispute opened with case # PP-R-BFB-10196981",
+    "resource": {
+      "dispute_id": "PP-R-BFB-10196981",
+      "create_time": "2026-11-07T11:12:00.302Z",
+      "update_time": "2026-11-07T11:14:38.405Z",
+      "disputed_transactions": [
+        {
+          "buyer_transaction_id": "7C543461XN7648417",
+          "seller_transaction_id": "4UM93153F2793482K",
+          "transaction_status": "COMPLETED",
+          "seller": {
+            "merchant_id": "N999U2WKXLHAA",
+            "name": "Test Store"
+          },
+          "items": [
+            {
+              "item_name": "ProofPilot demo widget",
+              "item_description": "ProofPilot demo widget",
+              "item_quantity": "1",
+              "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+              "item_type": "SERVICE"
+            }
+          ],
+          "seller_protection_eligible": true,
+          "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+        }
+      ],
+      "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+      "status": "UNDER_REVIEW",
+      "dispute_amount": {
+        "currency_code": "USD",
+        "value": "25.00"
+      },
+      "dispute_life_cycle_stage": "CHARGEBACK",
+      "dispute_channel": "INTERNAL",
+      "offer": {
+        "buyer_requested_amount": {
+          "currency_code": "USD",
+          "value": "25.00"
+        }
+      },
+      "refund_details": {
+        "allowed_refund_amount": {
+          "currency_code": "USD",
+          "value": "25.00"
+        }
+      },
+      "links": [
+        {
+          "href": "https://api.sandbox.paypal.com/v1/customer/disputes/PP-R-BFB-10196981",
+          "rel": "self",
+          "method": "GET"
+        }
+      ]
+    },
+    "links": [
+      {
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks-events/WH-4FT78283RM7104847-24A0708226357783N",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks-events/WH-4FT78283RM7104847-24A0708226357783N/resend",
+        "rel": "resend",
+        "method": "POST"
+      }
+    ]
+  }
+}

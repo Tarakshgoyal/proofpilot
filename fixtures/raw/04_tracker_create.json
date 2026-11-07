@@ -1,24 +1,24 @@
 {
   "step": "04_tracker_create",
-  "recorded_at": "2026-11-07T11:09:14Z",
+  "recorded_at": "2026-11-07T11:25:01Z",
   "method": "POST",
   "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers-batch",
   "status": 200,
-  "note": "tracking PP1794048007IN on capture 4UM93153F2793482K",
+  "note": "tracking PP1794048007IN on capture 9C6191441M4165506",
   "body": {
     "tracker_identifiers": [
       {
-        "transaction_id": "4UM93153F2793482K",
+        "transaction_id": "9C6191441M4165506",
         "tracking_number": "PP1794048007IN",
         "links": [
           {
-            "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/4UM93153F2793482K-PP1794048007IN",
+            "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/9C6191441M4165506-PP1794048007IN",
             "rel": "self",
             "method": "GET",
             "encType": "application/json"
           },
           {
-            "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/4UM93153F2793482K-PP1794048007IN",
+            "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/9C6191441M4165506-PP1794048007IN",
             "rel": "replace",
             "method": "PUT",
             "encType": "application/json"

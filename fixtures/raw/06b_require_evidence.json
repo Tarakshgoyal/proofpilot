@@ -1,15 +1,20 @@
 {
   "step": "06b_require_evidence",
-  "recorded_at": "2026-11-07T10:55:43Z",
+  "recorded_at": "2026-11-07T11:16:04Z",
   "method": "POST",
-  "url": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979/require-evidence",
-  "status": 415,
-  "note": "",
+  "url": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-BFB-10196981/require-evidence",
+  "status": 400,
+  "note": "sandbox test tool; surfaces the provide-evidence action",
   "body": {
-    "name": "UNSUPPORTED_MEDIA_TYPE",
-    "message": "The server does not support the request payload\u2019s media type.",
-    "debug_id": "f9385456ad7d6",
-    "details": [],
+    "name": "INVALID_REQUEST",
+    "message": "Request is not well-formed, syntactically incorrect, or violates schema.",
+    "debug_id": "f25096057db86",
+    "information_link": "https://developer.paypal.com/docs/api/customer-disputes/v1/#errors",
+    "details": [
+      {
+        "issue": "ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE"
+      }
+    ],
     "links": []
   }
 }
