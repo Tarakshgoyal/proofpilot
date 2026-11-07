@@ -1,0 +1,17 @@
+name: Keep Render awake
+# Render free instances sleep after 15 min without inbound traffic.
+# This pings /api/health every 10 minutes — which also keeps Neon warm.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          URL="${{ vars.RENDER_URL }}/api/health"
+          echo "pinging $URL"
+          curl -fsS --max-time 60 "$URL" && echo " OK" || echo " FAILED (non-fatal)"

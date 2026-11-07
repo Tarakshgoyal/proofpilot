@@ -3,13 +3,11 @@ services:
     name: proofpilot
     runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: starter
+    plan: free                # kept awake by .github/workflows/keepalive.yml
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: proofpilot-db
-          property: connectionString
+        sync: false           # Neon Postgres pooled connection string
       - key: APP_MODE
         value: live
       - key: RUN_WORKER_IN_APP
@@ -28,7 +26,3 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
-  - type: pserv
-    name: proofpilot-db
-    runtime: postgresql
-    plan: basic-256mb
