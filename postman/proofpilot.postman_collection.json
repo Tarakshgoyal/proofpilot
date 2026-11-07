@@ -1,0 +1,479 @@
+{
+ "info": {
+  "name": "ProofPilot API",
+  "description": "Dispute workspace API for the ProofPilot PayPal+AI hackathon project. Base URL local: http://localhost:8000 (judge compose) or the hosted Render URL.",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+ },
+ "variable": [
+  {
+   "key": "baseUrl",
+   "value": "http://localhost:8000"
+  }
+ ],
+ "item": [
+  {
+   "name": "POST Sync",
+   "request": {
+    "method": "POST",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/sync",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "sync"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET List Cases",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases"
+     ]
+    },
+    "description": "Batched counts (no N+1) \u2014 safe against remote DBs like Neon."
+   }
+  },
+  {
+   "name": "GET Get Case",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Facts",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/facts",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "facts"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "POST Upload Document",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/documents",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "documents"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Spans",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/documents/{document_id}/spans",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "documents",
+      "{document_id}",
+      "spans"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Locate Quote",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/documents/{document_id}/locate",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "documents",
+      "{document_id}",
+      "locate"
+     ]
+    },
+    "description": "Locator API: where in the document does this quote live?"
+   }
+  },
+  {
+   "name": "GET Get Page Image",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/documents/{document_id}/page/{page_no}",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "documents",
+      "{document_id}",
+      "page",
+      "{page_no}"
+     ]
+    },
+    "description": "Render one PDF page to PNG (PyMuPDF) for the provenance viewer."
+   }
+  },
+  {
+   "name": "GET Get File",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/documents/{document_id}/file",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "documents",
+      "{document_id}",
+      "file"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "POST Analyse Case",
+   "request": {
+    "method": "POST",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/analyse",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "analyse"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Proposal",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/proposal",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "proposal"
+     ]
+    },
+    "description": "Agent + verifier output: claims with statuses, checklist, contradictions."
+   }
+  },
+  {
+   "name": "GET Get Latest Plan",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/plan",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "plan"
+     ]
+    },
+    "description": "Latest plan (with its action) for the case panel to restore state."
+   }
+  },
+  {
+   "name": "POST Create Plan",
+   "request": {
+    "method": "POST",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/plan",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "plan"
+     ]
+    },
+    "description": "Build the next immutable plan version (hash-bound, packet attached)."
+   }
+  },
+  {
+   "name": "GET Get Plan",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/plans/{plan_id}",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "plans",
+      "{plan_id}"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "POST Approve Plan",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/plans/{plan_id}/approve",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "plans",
+      "{plan_id}",
+      "approve"
+     ]
+    },
+    "description": "Hash+version-bound approval. Idempotent replays return the same action."
+   }
+  },
+  {
+   "name": "POST Reject Plan",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{baseUrl}}/api/plans/{plan_id}/reject",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "plans",
+      "{plan_id}",
+      "reject"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Packet",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/plans/{plan_id}/packet",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "plans",
+      "{plan_id}",
+      "packet"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Action",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/actions/{action_id}",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "actions",
+      "{action_id}"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Audit",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/audit",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "audit"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Decision",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/cases/{case_id}/decision",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{case_id}",
+      "decision"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Get Job",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/jobs/{job_id}",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "jobs",
+      "{job_id}"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "GET Health",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/api/health",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "api",
+      "health"
+     ]
+    },
+    "description": ""
+   }
+  },
+  {
+   "name": "POST Paypal Webhook",
+   "request": {
+    "method": "POST",
+    "header": [],
+    "url": {
+     "raw": "{{baseUrl}}/webhooks/paypal",
+     "host": [
+      "{{baseUrl}}"
+     ],
+     "path": [
+      "webhooks",
+      "paypal"
+     ]
+    },
+    "description": "Accept a webhook, verify its signature, persist the event, queue a sync.\n\nThe sync job re-reads dispute state from the API \u2014 the event itself never\ncarries authoritative state into the case."
+   }
+  }
+ ]
+}

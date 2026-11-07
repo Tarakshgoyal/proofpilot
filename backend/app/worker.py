@@ -8,6 +8,7 @@ Run:  python -m backend.app.worker
 from __future__ import annotations
 
 import asyncio
+import os
 import traceback
 from datetime import datetime, timedelta, timezone
 
@@ -83,6 +84,9 @@ def handle_sync_disputes(session, payload: dict) -> dict:
         enqueue(session, "collect_case", {"case_id": case.id, "dispute_id": dispute_id})
         results["collected"] += 1
         results["changed"] += int(changed)
+        if os.getenv("APP_MODE", "fixture") == "fixture":
+            # judge/demo convenience: analyse each replayed case offline
+            enqueue(session, "investigate", {"case_id": case.id})
     session.commit()
     return results
 
@@ -146,12 +150,27 @@ def handle_execute_plan(session, payload: dict) -> dict:
     return result
 
 
+def handle_eval_run(session, payload: dict) -> dict:
+    from .evals import run_eval
+    from .models import EvalRun
+
+    run = session.get(EvalRun, payload["run_id"])
+    if run is None:
+        return {"error": "run_not_found"}
+    if run.status == "DONE":
+        return {"skipped": "already done"}
+    run_eval(session, run, quick=run.quick)
+    session.commit()
+    return {"totals": run.totals}
+
+
 HANDLERS = {
     "sync_disputes": handle_sync_disputes,
     "collect_case": handle_collect_case,
     "parse_document": handle_parse_document,
     "investigate": handle_investigate,
     "execute_plan": handle_execute_plan,
+    "eval_run": handle_eval_run,
 }
 
 

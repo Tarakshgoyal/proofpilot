@@ -28,6 +28,10 @@ def _ensure_columns() -> None:
             with engine.begin() as conn:
                 conn.execute(text(
                     "ALTER TABLE cases ADD COLUMN synthetic BOOLEAN DEFAULT FALSE"))
+        if "eval_run_id" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text(
+                    "ALTER TABLE cases ADD COLUMN eval_run_id VARCHAR(36)"))
 
 
 if __name__ == "__main__":

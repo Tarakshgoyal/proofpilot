@@ -42,10 +42,14 @@ def sync():
 
 
 @router.get("/cases")
-def list_cases():
-    """Batched counts (no N+1) — safe against remote DBs like Neon."""
+def list_cases(include_synthetic: bool = False):
+    """Batched counts (no N+1) — safe against remote DBs like Neon.
+    Eval-seeded synthetic cases are hidden unless include_synthetic=true."""
     with SessionLocal() as session:
-        cases = session.scalars(sa.select(Case).order_by(Case.created_at.desc())).all()
+        q = sa.select(Case).order_by(Case.created_at.desc())
+        if not include_synthetic:
+            q = q.where(Case.eval_run_id.is_(None))  # hide bulk eval cases
+        cases = session.scalars(q).all()
 
         def _counts(model, *filters):
             q = (sa.select(model.case_id, sa.func.count())
@@ -350,6 +354,51 @@ def get_decision(case_id: str):
             "evFightMinor": d.ev_fight, "evFoldMinor": d.ev_fold,
             "rationale": d.rationale, "model": d.model,
         }
+
+
+@router.post("/eval/run")
+def start_eval(quick: bool = True):
+    """Queue an eval run. quick=true: one variation per archetype (11 scenarios,
+    ~2-3 min). quick=false: full 33-scenario suite."""
+    with SessionLocal() as session:
+        from .models import EvalRun
+
+        run = EvalRun(quick=quick)
+        session.add(run)
+        session.commit()
+        enqueue(session, "eval_run", {"run_id": run.id}, dedupe=False)
+        session.commit()
+        return {"runId": run.id, "quick": quick, "status": "QUEUED"}, 202
+
+
+@router.get("/eval/runs")
+def list_eval_runs():
+    with SessionLocal() as session:
+        from .models import EvalRun
+
+        runs = session.scalars(sa.select(EvalRun)
+                               .order_by(EvalRun.created_at.desc()).limit(10)).all()
+        return {"runs": [{"id": r.id, "status": r.status, "quick": r.quick,
+                          "model": r.model, "totals": r.totals,
+                          "startedAt": r.created_at.isoformat() if r.created_at else None,
+                          "finishedAt": r.finished_at.isoformat() if r.finished_at else None}
+                         for r in runs]}
+
+
+@router.get("/eval/runs/{run_id}")
+def get_eval_run(run_id: str):
+    with SessionLocal() as session:
+        from .models import EvalResult, EvalRun
+
+        run = session.get(EvalRun, run_id)
+        if run is None:
+            raise HTTPException(404, "run not found")
+        results = session.scalars(sa.select(EvalResult)
+                                  .where(EvalResult.run_id == run.id)).all()
+        return {"id": run.id, "status": run.status, "quick": run.quick,
+                "model": run.model, "totals": run.totals,
+                "results": [{"scenario": x.scenario, "ok": x.ok,
+                             "label": x.label, "found": x.found} for x in results]}
 
 
 @router.get("/jobs/{job_id}")

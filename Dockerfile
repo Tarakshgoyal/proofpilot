@@ -15,6 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend ./backend
 COPY seed ./seed
+COPY fixtures ./fixtures
 COPY --from=frontend /web/dist ./frontend/dist
 
 EXPOSE 8000

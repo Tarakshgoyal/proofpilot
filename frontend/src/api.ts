@@ -126,3 +126,32 @@ export const locate = (docId: string, quote: string) =>
 
 export const fetchLatestPlan = (caseId: string) =>
   fetch(`/api/cases/${caseId}/plan`).then(r => r.json() as Promise<PlanOut | {}>)
+
+export interface EvalRunOut {
+  id: string
+  status: string
+  quick: boolean
+  model: string
+  totals: Record<string, number | null>
+  startedAt: string | null
+  finishedAt: string | null
+}
+
+export interface EvalRunDetail extends EvalRunOut {
+  results: {
+    scenario: string
+    ok: boolean
+    label: { expected_contradictions: string[]; expected_action: string; must_strike: string[]; must_verify: string[] }
+    found: Record<string, any>
+  }[]
+}
+
+export const fetchEvalRuns = () =>
+  fetch('/api/eval/runs').then(r => r.json() as Promise<{ runs: EvalRunOut[] }>)
+
+export const fetchEvalRun = (id: string) =>
+  fetch(`/api/eval/runs/${id}`).then(r => r.json() as Promise<EvalRunDetail>)
+
+export const startEval = (quick: boolean) =>
+  fetch(`/api/eval/run?quick=${quick}`, { method: 'POST' })
+    .then(r => r.json() as Promise<{ runId: string }>)

@@ -8,6 +8,7 @@ import {
   analyseCase, approvePlan, buildPlan, fetchAction, fetchAudit, fetchCases, fetchDecision, fetchLatestPlan, fetchProposal,
 } from './api'
 import { PdfViewer } from './PdfViewer'
+import { EvalPage } from './EvalPage'
 import { ErrorBoundary } from './ErrorBoundary'
 
 function StatusBadge({ status }: { status: string }) {
@@ -241,6 +242,7 @@ export default function App() {
   const gridRef = useRef<AgGridReact>(null)
   const [cases, setCases] = useState<CaseRow[]>([])
   const [selected, setSelected] = useState<string | null>(null)
+  const [tab, setTab] = useState<'queue' | 'eval'>('queue')
 
   useEffect(() => {
     const load = () => fetchCases().then(setCases).catch(() => {})
@@ -272,7 +274,12 @@ export default function App() {
       <header>
         <b>ProofPilot</b>
         <span className="dim"> · no claim without a citation, no citation without a checksum</span>
+        <span className="tabs">
+          <button className={tab === 'queue' ? 'tab active' : 'tab'} onClick={() => setTab('queue')}>Dispute queue</button>
+          <button className={tab === 'eval' ? 'tab active' : 'tab'} onClick={() => setTab('eval')}>Eval</button>
+        </span>
       </header>
+      {tab === 'eval' ? <EvalPage /> : (
       <div className="layout">
         <div className="ag-theme-quartz grid">
           <AgGridReact
@@ -286,6 +293,7 @@ export default function App() {
         </div>
         {selected ? <CasePanel caseId={selected} onClose={() => setSelected(null)} /> : null}
       </div>
+      )}
     </div>
   )
 }

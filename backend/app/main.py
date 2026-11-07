@@ -60,6 +60,17 @@ async def _start_worker_if_configured() -> None:
             print("[startup] seeded:", seed_backoffice())
         except Exception as exc:  # noqa: BLE001
             print(f"[startup] seed failed: {exc}")
+        if os.getenv("APP_MODE", "fixture") == "fixture":
+            try:
+                from .db import SessionLocal
+                from .worker import enqueue
+
+                with SessionLocal() as session:
+                    enqueue(session, "sync_disputes", {})
+                    session.commit()
+                print("[startup] fixture sync queued")
+            except Exception as exc:  # noqa: BLE001
+                print(f"[startup] fixture sync failed: {exc}")
     asyncio.create_task(run_worker())
 
 

@@ -48,6 +48,7 @@ class Case(CreatedAt, Base):
     raw_snapshot: Mapped[dict] = mapped_column(sa.JSON, default=dict)  # last raw dispute JSON
     version: Mapped[int] = mapped_column(sa.Integer, default=1)
     synthetic: Mapped[bool] = mapped_column(sa.Boolean, default=False)  # eval-seeded case
+    eval_run_id: Mapped[str | None] = mapped_column(sa.String(36))      # owning eval run
 
 
 class WebhookEvent(CreatedAt, Base):
@@ -163,6 +164,34 @@ class Analysis(CreatedAt, Base):
     error: Mapped[str] = mapped_column(sa.Text, default="")
     raw_output: Mapped[dict] = mapped_column(sa.JSON, default=dict)
     recommended_action: Mapped[str] = mapped_column(sa.String(16), default="")
+
+
+class EvalRun(CreatedAt, Base):
+    """One evaluation run over the labelled scenario suite."""
+
+    __tablename__ = "eval_runs"
+
+    id: Mapped[str] = pk()
+    status: Mapped[str] = mapped_column(sa.String(16), default="RUNNING")
+    # RUNNING|DONE|FAILED
+    quick: Mapped[bool] = mapped_column(sa.Boolean, default=False)
+    model: Mapped[str] = mapped_column(sa.String(128), default="")
+    totals: Mapped[dict] = mapped_column(sa.JSON, default=dict)
+    error: Mapped[str] = mapped_column(sa.Text, default="")
+    finished_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+
+
+class EvalResult(CreatedAt, Base):
+    __tablename__ = "eval_results"
+    __table_args__ = (sa.UniqueConstraint("run_id", "scenario", name="uq_eval_run_scenario"),)
+
+    id: Mapped[str] = pk()
+    run_id: Mapped[str] = mapped_column(sa.ForeignKey("eval_runs.id"))
+    scenario: Mapped[str] = mapped_column(sa.String(64))
+    label: Mapped[dict] = mapped_column(sa.JSON)     # ground truth
+    found: Mapped[dict] = mapped_column(sa.JSON)     # what the system did
+    ok: Mapped[bool] = mapped_column(sa.Boolean, default=False)
+    detail: Mapped[str] = mapped_column(sa.JSON, default=dict)
 
 
 class Decision(CreatedAt, Base):

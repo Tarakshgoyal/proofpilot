@@ -43,3 +43,12 @@ button.approve:disabled { opacity: 0.6; }
 .pdf-wrap { position: relative; background: #e2e8f0; border-radius: 8px; padding: 8px; overflow: auto; max-height: 70vh; }
 .highlight-box { position: absolute; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.25); border-radius: 2px; pointer-events: none; }
 .quote-bar { margin: 6px 0; }
+
+.tabs { margin-left: auto; display: flex; gap: 6px; }
+.tab { background: #1e293b; color: #cbd5e1; border: none; padding: 6px 14px; border-radius: 8px; cursor: pointer; }
+.tab.active { background: #fff; color: #0f172a; font-weight: 600; }
+.eval-page { padding: 16px; overflow-y: auto; }
+.metrics-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+.metric { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px; min-width: 150px; }
+.metric-value { font-size: 22px; font-weight: 700; }
+.metric-label { font-size: 11px; color: #475569; }
