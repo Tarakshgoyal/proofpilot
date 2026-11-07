@@ -41,6 +41,13 @@ async def _start_worker_if_configured() -> None:
 
     from .worker import run_worker
 
+    if os.getenv("SEED_ON_START", "0") == "1":
+        try:
+            from seed.backoffice import seed as seed_backoffice
+
+            print("[startup] seeded:", seed_backoffice())
+        except Exception as exc:  # noqa: BLE001
+            print(f"[startup] seed failed: {exc}")
     asyncio.create_task(run_worker())
 
 

@@ -16,9 +16,10 @@ class Settings:
     paypal_base_url: str = os.getenv("PAYPAL_BASE_URL", "https://api-m.sandbox.paypal.com")
     paypal_webhook_id: str = os.getenv("PAYPAL_WEBHOOK_ID", "")
     paypal_buyer_email: str = os.getenv("PAYPAL_BUYER_EMAIL", "")
+    # Render injects DATABASE_URL as postgres:// — SQLAlchemy/psycopg2 needs the scheme.
     database_url: str = os.getenv(
         "DATABASE_URL", "postgresql+psycopg2://proofpilot:proofpilot@localhost:5432/proofpilot"
-    )
+    ).replace("postgres://", "postgresql+psycopg2://", 1)
 
     @property
     def sandbox_admin_enabled(self) -> bool:

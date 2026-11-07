@@ -6,9 +6,15 @@ services:
     plan: starter
     healthCheckPath: /api/health
     envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: proofpilot-db
+          property: connectionString
       - key: APP_MODE
         value: live
       - key: RUN_WORKER_IN_APP
+        value: "1"
+      - key: SEED_ON_START
         value: "1"
       - key: PAYPAL_ENV
         value: sandbox
