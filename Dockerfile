@@ -6,6 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend ./backend
+COPY seed ./seed
 
 # Frontend build output is copied here on Day 4 (judge-facing compose uses fixture mode).
 EXPOSE 8000
