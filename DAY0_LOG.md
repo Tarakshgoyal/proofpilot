@@ -13,7 +13,19 @@ This is the institutional knowledge for the gateway, the demo, and the README.
 | 4 | Dispute exists via real buyer Resolution Center flow | ✅ `PP-R-KNZ-10196979`, INR reason, **CHARGEBACK** stage (card-funded + escalated) | `06/07` |
 | 5 | `POST /v1/customer/disputes/{id}/provide-supporting-info` (multipart `input` + `supporting document` file part) | ✅ **merchant evidence PDF accepted** — the core write of the product | `08_*` |
 | 6 | Webhooks `CUSTOMER.DISPUTE.CREATED/UPDATED` received via ngrok | ✅ **signature verification SUCCESS on all events** (verify-webhook-signature) | `fixtures/webhooks/*.json` |
-| 7 | `adjudicate` | ⏳ blocked on CHARGEBACK (`ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE`) — expected; chargeback resolution is simulated by the card-network side. Adjudicate applies to INQUIRY. Pending: fresh INQUIRY case → provide-evidence → adjudicate → RESOLVED | — |
+| 7 | `POST /v1/customer/disputes/{id}/adjudicate` `SELLER_FAVOR` | ✅ **dispute RESOLVED — `RESOLVED_SELLER_FAVOUR`**; `CUSTOMER.DISPUTE.RESOLVED` webhook received + signature-verified | `10/11` |
+
+## DAY 0 EXIT CONDITION: MET ✅
+
+Full sandbox loop proven end-to-end: transaction → real buyer dispute → verified
+webhooks → merchant evidence PDF via real API → adjudication → RESOLVED.
+10/10 webhook events signature-verified; 14 lifecycle fixtures recorded.
+
+**Adjudication learning:** on Resolution-Center chargebacks, the `adjudicate`
+link only appears AFTER the merchant submits evidence (then allow 2–3 min —
+resolution is async). Links observed pre-evidence: `provide_supporting_info`
+only; post-evidence: `accept_claim`, `adjudicate`, `provide_supporting_info`,
+`require_evidence`.
 
 ## Sandbox gotchas → fixes (each cost time today; none will cost time again)
 
@@ -62,9 +74,15 @@ This is the institutional knowledge for the gateway, the demo, and the README.
 
 ## Still open for Day 1
 
-- [ ] INQUIRY case → `provide-evidence` (classic path) → `adjudicate
-      SELLER_FAVOR` → `CUSTOMER.DISPUTE.RESOLVED` webhook (watcher running)
-- [ ] Chargeback resolution simulation via `POST /v2/customer-support/process-chargeback`
+- [x] ~~INQUIRY case → provide-evidence → adjudicate → RESOLVED~~ — **done via
+      chargeback path**: evidence matured the dispute, adjudicate link appeared,
+      `SELLER_FAVOR` → RESOLVED. Classic INQUIRY `provide-evidence` link path
+      remains untested (all buyer-filed cases in this sandbox config are
+      CHARGEBACK stage — likely the IN-region merchant; test a US merchant app
+      if the INQUIRY path is needed for eval scenarios).
+- [ ] `POST /v2/customer-support/process-chargeback` for scripted chargeback
+      creation + resolution (merchant_id `N999U2WKXLHAA` captured; event codes
+      undocumented in public specs — trial-and-error or MTS)
 - [ ] LiwP buyer-consent flow to enable API-created disputes (demo button)
-- [ ] `return_url` on demo orders (fix spinner)
+- [ ] `return_url` on demo orders (fix checkout spinner hang)
 - [ ] Render deploy (stable webhook URL replaces ngrok)

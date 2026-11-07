@@ -1,0 +1,117 @@
+{
+  "received_at": "2026-11-07T11:33:07Z",
+  "event_id": "WH-60J13983X8502982K-5C713492N7496882N",
+  "event_type": "CUSTOMER.DISPUTE.UPDATED",
+  "verified": true,
+  "verification_error": null,
+  "headers": {
+    "paypal-transmission-id": "fea17c86-da9e-11f1-98c7-df91591bda2c",
+    "paypal-transmission-time": "2026-11-07T11:33:03Z",
+    "paypal-transmission-sig": "eFOAMZL30dfj4/SqKO4uKYnzz6uq8juZBX/6wXl+hNNmC250ZcK1mgCSHSqvoiuwF+MLGnHsB4InIn3vzJYP5gjOx6kyk225CsIhJxT0UPtVaNmoJkpN/SPBQpiY/WVvD7nXeEe8tIQ9NCoXEasKzadNuSu//2khMwPv4zLl9/CRMguTkwt2brKAKsJsSrS+h46j5pPpYeajZyYJF0SWJ+Ti2BwLLgeA3HFddzMfkjeXUse/qTsKlRneLSCn1Q075cIMsIHdXtuAH6Ymu3cPgTeCajKCWFGvq0IZAVefHFCc4eX2HRFNcWmyAtYDsoNABGDWqmKuSF9jczgEyKBGfA==",
+    "paypal-cert-url": "https://api.sandbox.paypal.com/v1/notifications/certs/CERT-360caa42-fca2a594-9eaebfdf",
+    "paypal-auth-algo": "SHA256withRSA"
+  },
+  "body": {
+    "id": "WH-60J13983X8502982K-5C713492N7496882N",
+    "event_version": "1.0",
+    "create_time": "2026-11-07T11:33:02.738Z",
+    "resource_type": "dispute",
+    "event_type": "CUSTOMER.DISPUTE.UPDATED",
+    "summary": "A dispute was updated with case # PP-R-BFB-10196981",
+    "resource": {
+      "dispute_id": "PP-R-BFB-10196981",
+      "create_time": "2026-11-07T11:12:00.302Z",
+      "update_time": "2026-11-07T11:32:53.990Z",
+      "disputed_transactions": [
+        {
+          "buyer_transaction_id": "7C543461XN7648417",
+          "seller_transaction_id": "4UM93153F2793482K",
+          "transaction_status": "HELD",
+          "seller": {
+            "merchant_id": "N999U2WKXLHAA",
+            "name": "Test Store"
+          },
+          "items": [
+            {
+              "item_name": "ProofPilot demo widget",
+              "item_description": "ProofPilot demo widget",
+              "item_quantity": "1",
+              "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+              "item_type": "SERVICE"
+            }
+          ],
+          "seller_protection_eligible": true,
+          "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+        }
+      ],
+      "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+      "status": "UNDER_REVIEW",
+      "dispute_amount": {
+        "currency_code": "USD",
+        "value": "25.00"
+      },
+      "fund_movements": [
+        {
+          "party": "RECEIVER",
+          "amount": {
+            "currency_code": "USD",
+            "value": "23.49"
+          },
+          "initiated_time": "2026-11-07T11:15:04.000Z",
+          "type": "DEBIT",
+          "reason": "HOLD_PLACED"
+        }
+      ],
+      "dispute_life_cycle_stage": "CHARGEBACK",
+      "dispute_channel": "INTERNAL",
+      "offer": {
+        "buyer_requested_amount": {
+          "currency_code": "USD",
+          "value": "25.00"
+        }
+      },
+      "refund_details": {
+        "allowed_refund_amount": {
+          "currency_code": "USD",
+          "value": "25.00"
+        }
+      },
+      "allowed_response_options": {
+        "accept_claim": {
+          "accept_claim_types": [
+            "REFUND"
+          ]
+        }
+      },
+      "links": [
+        {
+          "href": "https://api.sandbox.paypal.com/v1/customer/disputes/PP-R-BFB-10196981",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "https://api.sandbox.paypal.com/v1/customer/disputes/PP-R-BFB-10196981/accept-claim",
+          "rel": "accept_claim",
+          "method": "POST"
+        },
+        {
+          "href": "https://api.sandbox.paypal.com/v1/customer/disputes/PP-R-BFB-10196981/provide-supporting-info",
+          "rel": "provide_supporting_info",
+          "method": "POST"
+        }
+      ]
+    },
+    "links": [
+      {
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks-events/WH-60J13983X8502982K-5C713492N7496882N",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "https://api.sandbox.paypal.com/v1/notifications/webhooks-events/WH-60J13983X8502982K-5C713492N7496882N/resend",
+        "rel": "resend",
+        "method": "POST"
+      }
+    ]
+  }
+}

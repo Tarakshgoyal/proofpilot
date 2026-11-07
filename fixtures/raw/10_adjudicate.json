@@ -1,20 +1,13 @@
 {
   "step": "10_adjudicate",
-  "recorded_at": "2026-11-07T10:57:05Z",
+  "recorded_at": "2026-11-07T11:32:50Z",
   "method": "POST",
   "url": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979/adjudicate",
-  "status": 400,
-  "note": "sandbox test adjudication; NOT a real outcome signal",
+  "status": 200,
+  "note": "sandbox test adjudication after merchant evidence",
   "body": {
-    "name": "INVALID_REQUEST",
-    "message": "Request is not well-formed, syntactically incorrect, or violates schema.",
-    "debug_id": "ca56bd0a50dc0",
-    "information_link": "https://developer.paypal.com/docs/api/customer-disputes/v1/#errors",
-    "details": [
-      {
-        "issue": "ACTION_NOT_ALLOWED_IN_CURRENT_DISPUTE_STATE"
-      }
-    ],
-    "links": []
+    "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-KNZ-10196979",
+    "rel": "self",
+    "method": "GET"
   }
 }
