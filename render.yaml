@@ -8,6 +8,8 @@ services:
     envVars:
       - key: APP_MODE
         value: live
+      - key: RUN_WORKER_IN_APP
+        value: "1"
       - key: PAYPAL_ENV
         value: sandbox
       - key: PAYPAL_CLIENT_ID

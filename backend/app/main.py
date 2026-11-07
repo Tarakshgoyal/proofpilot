@@ -26,6 +26,24 @@ app = FastAPI(title="ProofPilot", version="0.2.0")
 app.include_router(api_router)
 
 
+@app.on_event("startup")
+async def _start_worker_if_configured() -> None:
+    """Single-service mode (Render): run the job worker as an in-app task.
+
+    Local dev keeps the dedicated `python -m backend.app.worker` process;
+    set RUN_WORKER_IN_APP=0 to disable.
+    """
+    import os
+
+    if os.getenv("RUN_WORKER_IN_APP", "0") != "1":
+        return
+    import asyncio
+
+    from .worker import run_worker
+
+    asyncio.create_task(run_worker())
+
+
 @app.get("/api/health")
 async def health() -> dict:
     db_ok = True
