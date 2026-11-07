@@ -21,9 +21,9 @@ sys.path.insert(0, str(ROOT))
 from backend.app.paypal_client import PayPalClient  # noqa: E402
 
 DISPUTE_EVENTS = [
-    "CUSTOMER_DISPUTES.CREATED",
-    "CUSTOMER_DISPUTES.UPDATED",
-    "CUSTOMER_DISPUTES.RESOLVED",
+    "CUSTOMER.DISPUTE.CREATED",
+    "CUSTOMER.DISPUTE.UPDATED",
+    "CUSTOMER.DISPUTE.RESOLVED",
 ]
 
 
