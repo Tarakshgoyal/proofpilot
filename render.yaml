@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: proofpilot
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_MODE
+        value: live
+      - key: PAYPAL_ENV
+        value: sandbox
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+      - key: PAYPAL_BUYER_EMAIL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+  - type: pserv
+    name: proofpilot-db
+    runtime: postgresql
+    plan: basic-256mb
