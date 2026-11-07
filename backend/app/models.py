@@ -60,6 +60,23 @@ class WebhookEvent(CreatedAt, Base):
     processed_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
 
 
+class Job(CreatedAt, Base):
+    """Durable background job. The asyncio worker claims rows via status+lease."""
+
+    __tablename__ = "jobs"
+
+    id: Mapped[str] = pk()
+    kind: Mapped[str] = mapped_column(sa.String(64))       # sync_disputes|collect_case|parse_document
+    payload: Mapped[dict] = mapped_column(sa.JSON, default=dict)
+    status: Mapped[str] = mapped_column(sa.String(16), default="QUEUED")
+    # QUEUED|RUNNING|DONE|FAILED
+    attempts: Mapped[int] = mapped_column(sa.Integer, default=0)
+    max_attempts: Mapped[int] = mapped_column(sa.Integer, default=3)
+    lease_expires_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+    last_error: Mapped[str] = mapped_column(sa.Text, default="")
+    finished_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+
+
 # --------------------------------------------------------- evidence graph
 class Fact(CreatedAt, Base):
     __tablename__ = "facts"
@@ -85,6 +102,12 @@ class Document(CreatedAt, Base):
     storage_path: Mapped[str] = mapped_column(sa.String(512))
     extracted_text: Mapped[str] = mapped_column(sa.Text, default="")
     pages: Mapped[int] = mapped_column(sa.Integer, default=0)
+    doc_type: Mapped[str] = mapped_column(sa.String(64), default="OTHER")
+    # OTHER|CARRIER_DOC|INVOICE|CUSTOMER_CHAT|POLICY|PACKET
+    origin: Mapped[str] = mapped_column(sa.String(32), default="MERCHANT_UPLOAD")
+    # MERCHANT_UPLOAD|PAYPAL_API|SEED
+    parsed_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True))
+    parse_error: Mapped[str] = mapped_column(sa.Text, default="")
 
 
 class Span(CreatedAt, Base):

@@ -20,3 +20,6 @@ frontend/dist/
 Thumbs.db
 ngrok.log
 *.log
+
+# local data (documents, test dbs)
+data/
