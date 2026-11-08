@@ -1,0 +1,18 @@
+{
+  "received_at": "2026-11-08T07:17:23Z",
+  "event_id": "e2e-probe-1",
+  "event_type": "PROBE",
+  "verified": false,
+  "verification_error": "HTTP 400 https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature :: VALIDATION_ERROR Invalid data provided",
+  "headers": {
+    "paypal-transmission-id": null,
+    "paypal-transmission-time": null,
+    "paypal-transmission-sig": null,
+    "paypal-cert-url": null,
+    "paypal-auth-algo": null
+  },
+  "body": {
+    "id": "e2e-probe-1",
+    "event_type": "PROBE"
+  }
+}

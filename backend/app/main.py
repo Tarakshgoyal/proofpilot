@@ -110,14 +110,17 @@ async def paypal_webhook(request: Request) -> dict:
     verification_error = None
     if settings.paypal_webhook_id:
         try:
-            from .gateway import get_gateway
+            # Signature verification is a SAFETY property: always ask the real
+            # PayPal API, never the fixture gateway, regardless of APP_MODE.
+            from .paypal_client import PayPalClient
 
-            verified = get_gateway().verify_webhook_signature(
-                body, headers) == "SUCCESS"
+            verified = PayPalClient().verify_webhook_signature(
+                body, headers, settings.paypal_webhook_id) == "SUCCESS"
         except Exception as exc:  # noqa: BLE001 — keep receiver alive, mark pending
-            verification_error = str(exc)
+            verification_error = str(exc)[:200]
     else:
-        verification_error = "PAYPAL_WEBHOOK_ID not configured"
+        verification_error = ("PAYPAL_WEBHOOK_ID not configured — event stored as "
+                              "PENDING; it must never trigger state changes")
 
     # durable record (file for audit + DB for processing)
     WEBHOOK_DIR.mkdir(parents=True, exist_ok=True)

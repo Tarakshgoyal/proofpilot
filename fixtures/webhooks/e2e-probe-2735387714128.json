@@ -1,0 +1,18 @@
+{
+  "received_at": "2026-11-08T07:14:24Z",
+  "event_id": "e2e-probe-2735387714128",
+  "event_type": "PROBE",
+  "verified": true,
+  "verification_error": null,
+  "headers": {
+    "paypal-transmission-id": null,
+    "paypal-transmission-time": null,
+    "paypal-transmission-sig": null,
+    "paypal-cert-url": null,
+    "paypal-auth-algo": null
+  },
+  "body": {
+    "id": "e2e-probe-2735387714128",
+    "event_type": "PROBE"
+  }
+}

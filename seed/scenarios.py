@@ -160,19 +160,27 @@ def build_world(session: Session, arch: dict, variation: int, run_id: str) -> st
     name = arch["name"]
     dispute_id = f"PP-EVAL-{name[:4].upper()}-{variation}-{run_id[:4]}"
     capture = f"EVAL-CAP-{name[:4].upper()}-{variation}-{run_id[:4]}"
-    # idempotent: clear any leftovers for this exact dispute id
+    # idempotent: full teardown of any leftovers for this exact dispute id
+    # (case rows with spans-first for FK, AND the back-office records)
     from backend.app.models import (Analysis, Claim, Contradiction, Decision,
-                                    Document, Fact as F, Span, SupportThread)
+                                    Document, Fact as F, Order, Plan, Shipment,
+                                    Span, SupportThread)
     old = session.scalar(sa.select(Case).where(Case.dispute_id == dispute_id))
     if old is not None:
         session.query(Span).filter(Span.document_id.in_(
             sa.select(Document.id).where(Document.case_id == old.id))
         ).delete(synchronize_session=False)
-        for model in (Claim, Contradiction, Document, F, Analysis, Decision):
+        for model in (Claim, Contradiction, Document, F, Analysis, Decision, Plan):
             session.query(model).filter(model.case_id == old.id).delete(synchronize_session=False)
-        session.commit()
+        old_order = session.scalar(sa.select(Order).where(
+            Order.merchant_order_id == f"ORD-{dispute_id}"))
+        if old_order is not None:
+            session.query(SupportThread).filter(
+                SupportThread.order_id == old_order.id).delete(synchronize_session=False)
+            session.query(Shipment).filter(
+                Shipment.order_id == old_order.id).delete(synchronize_session=False)
+            session.delete(old_order)
         session.delete(old)
-        session.query(SupportThread).filter(SupportThread.order_id.is_(None)).delete()
         session.commit()
     amount = arch.get("dispute_multiplier") and f"{float(AMOUNTS[variation]) * arch['dispute_multiplier']:.2f}" or AMOUNTS[variation]
     order_minor = int(float(AMOUNTS[variation]) * 100)

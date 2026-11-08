@@ -1,6 +1,6 @@
 {
   "step": "00_token",
-  "recorded_at": "2026-11-07T19:05:53Z",
+  "recorded_at": "2026-11-08T07:17:23Z",
   "method": "POST",
   "url": "/v1/oauth2/token",
   "status": 200,

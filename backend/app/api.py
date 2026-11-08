@@ -38,7 +38,9 @@ def sync():
     with SessionLocal() as session:
         job = enqueue(session, "sync_disputes", {})
         session.commit()
-        return {"jobId": job.id, "status": "QUEUED"}, 202
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse({"jobId": job.id, "status": "QUEUED"}, status_code=202)
 
 
 @router.get("/cases")
@@ -122,8 +124,11 @@ async def upload_document(case_id: str, file: UploadFile = File(...),
         session.commit()
         enqueue(session, "parse_document", {"document_id": doc.id})
         session.commit()
-        return {"documentId": doc.id, "sha256": doc.sha256, "spans": n_spans,
-                "parsed": bool(doc.parsed_at)}, 202
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse({"documentId": doc.id, "sha256": doc.sha256,
+                             "spans": n_spans, "parsed": bool(doc.parsed_at)},
+                            status_code=202)
 
 
 @router.get("/documents/{document_id}/spans")
@@ -195,7 +200,9 @@ def analyse_case(case_id: str):
         _case_or_404(session, case_id)
         job = enqueue(session, "investigate", {"case_id": case_id})
         session.commit()
-        return {"jobId": job.id, "status": "QUEUED"}, 202
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse({"jobId": job.id, "status": "QUEUED"}, status_code=202)
 
 
 @router.get("/cases/{case_id}/proposal")
@@ -257,7 +264,9 @@ def create_plan(case_id: str):
             session.commit()
         except ValueError as exc:
             raise HTTPException(409, str(exc))
-        return _plan_out(plan), 201
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(_plan_out(plan), status_code=201)
 
 
 @router.get("/plans/{plan_id}")
@@ -368,7 +377,10 @@ def start_eval(quick: bool = True):
         session.commit()
         enqueue(session, "eval_run", {"run_id": run.id}, dedupe=False)
         session.commit()
-        return {"runId": run.id, "quick": quick, "status": "QUEUED"}, 202
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse({"runId": run.id, "quick": quick, "status": "QUEUED"},
+                            status_code=202)
 
 
 @router.get("/eval/runs")
