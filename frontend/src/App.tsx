@@ -41,7 +41,9 @@ function CasePanel({ caseId, onClose }: { caseId: string; onClose: () => void })
       const pl = await fetchLatestPlan(caseId)
       if (pl && (pl as PlanOut).id) {
         setPlan(pl as PlanOut)
-        if ((pl as any).action) setAction((pl as any).action)
+        setAction((pl as any).action ?? null)
+      } else {
+        setPlan(null); setAction(null)
       }
     } catch (e) { setErr(String(e)) }
   }, [caseId])

@@ -88,7 +88,8 @@ def archetypes() -> list[dict]:
         },
         {
             "name": "missing_tracking",
-            "expected_contradictions": [], "expected_action": "FIGHT",
+            # no delivery evidence -> EV says don't fight (label corrected after v1 run)
+            "expected_contradictions": [], "expected_action": "ACCEPT",
             "must_verify": [], "must_strike": ["DELIVERED_ON", "TRACKING_ASSIGNED"],
             "no_shipment": True,
         },
@@ -122,7 +123,8 @@ def archetypes() -> list[dict]:
         },
         {
             "name": "forged_document",
-            "expected_contradictions": [], "expected_action": "FIGHT",
+            # forged 'proof' + no merchant delivery record -> don't fight
+            "expected_contradictions": [], "expected_action": "ACCEPT",
             "must_strike": ["DELIVERED_ON"],
             "forged_doc": True,
             "no_shipment": True,  # merchant DB has no delivery; only the forged doc
@@ -159,12 +161,18 @@ def build_world(session: Session, arch: dict, variation: int, run_id: str) -> st
     dispute_id = f"PP-EVAL-{name[:4].upper()}-{variation}-{run_id[:4]}"
     capture = f"EVAL-CAP-{name[:4].upper()}-{variation}-{run_id[:4]}"
     # idempotent: clear any leftovers for this exact dispute id
-    from backend.app.models import Claim, Contradiction, Document, Fact as F
+    from backend.app.models import (Analysis, Claim, Contradiction, Decision,
+                                    Document, Fact as F, Span, SupportThread)
     old = session.scalar(sa.select(Case).where(Case.dispute_id == dispute_id))
     if old is not None:
-        for model in (Claim, Contradiction, Document, F):
-            session.query(model).filter(model.case_id == old.id).delete()
+        session.query(Span).filter(Span.document_id.in_(
+            sa.select(Document.id).where(Document.case_id == old.id))
+        ).delete(synchronize_session=False)
+        for model in (Claim, Contradiction, Document, F, Analysis, Decision):
+            session.query(model).filter(model.case_id == old.id).delete(synchronize_session=False)
+        session.commit()
         session.delete(old)
+        session.query(SupportThread).filter(SupportThread.order_id.is_(None)).delete()
         session.commit()
     amount = arch.get("dispute_multiplier") and f"{float(AMOUNTS[variation]) * arch['dispute_multiplier']:.2f}" or AMOUNTS[variation]
     order_minor = int(float(AMOUNTS[variation]) * 100)

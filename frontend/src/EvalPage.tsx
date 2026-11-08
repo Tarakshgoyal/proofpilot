@@ -75,6 +75,7 @@ export function EvalPage() {
           <span className="dim"> · labelled synthetic scenarios · {detail?.model || ''}</span>
         </div>
         <div className="panel-actions">
+          <span className="dim small">~1–3 min/scenario on the free NIM tier — results stream in below</span>
           <button disabled={busy} onClick={() => run(true)}>Run quick eval (11)</button>
           <button disabled={busy} onClick={() => run(false)}>Run full eval (33)</button>
         </div>
