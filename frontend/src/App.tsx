@@ -259,16 +259,16 @@ export default function App() {
     { headerName: 'Reason', field: 'reason', flex: 1.3,
       valueFormatter: r => String(r.value ?? '').replace('MERCHANDISE_OR_SERVICE_', '') },
     { headerName: 'Stage', field: 'stage', width: 110 },
-    { headerName: 'PayPal', field: 'provider_status', width: 150 },
-    { headerName: 'Flow', field: 'workflow_status', width: 110 },
-    { headerName: 'Amount', field: 'amount_minor', width: 90,
+    { headerName: 'PayPal status', field: 'provider_status', flex: 1.1, minWidth: 120 },
+    { headerName: 'Flow', field: 'workflow_status', minWidth: 95, flex: 0.8 },
+    { headerName: 'Amount', field: 'amount_minor', minWidth: 80,
       valueFormatter: r => `$${(r.value / 100).toFixed(2)}` },
-    { headerName: 'Facts', field: 'fact_count', width: 70 },
-    { headerName: 'Contradictions', field: 'contradiction_count', width: 120,
+    { headerName: 'Facts', field: 'fact_count', minWidth: 60 },
+    { headerName: 'Flags', field: 'contradiction_count', minWidth: 65, flex: 0.7,
       cellClass: r => (r.value > 0 ? 'hot' : '') },
     { headerName: 'Claims v/r', valueGetter: r =>
-        `${r.data?.claims_verified ?? 0}/${r.data?.claims_rejected ?? 0}`, width: 100 },
-    { headerName: 'Action', field: 'recommended_action', width: 90 },
+        `${r.data?.claims_verified ?? 0}/${r.data?.claims_rejected ?? 0}`, minWidth: 85 },
+    { headerName: 'Action', field: 'recommended_action', minWidth: 80, flex: 0.7 },
   ]
 
   return (
