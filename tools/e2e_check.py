@@ -95,20 +95,24 @@ def main() -> int:
     check("decision present", bool(d.get("recommendedAction"))
           and "not calibrated" in d.get("rationale", ""), str(d.get("pWin")))
 
-    # 11 executed plan + exactly one action + audit valid
-    plan = c.get(f"/api/cases/{yjh['id']}/plan").json()
-    check("executed plan restored", plan.get("status") == "EXECUTED"
-          and plan.get("action", {}).get("status") == "COMPLETED",
-          f"v{plan.get('version')}")
+    # 11 executed plan + exactly one action (target it via DB: later e2e runs
+    # legitimately leave newer REJECTED plan versions on the case)
+    from backend.app.db import SessionLocal
+    from backend.app.models import Action, Plan as PlanModel
+    import sqlalchemy as sa
 
-    # 12 audit chain: exercise plan + reject to generate fresh chained rows
-    r = c.post(f"/api/cases/{yjh['id']}/plan")
-    if r.status_code == 201:
-        c.post(f"/api/plans/{r.json()['id']}/reject", json={"reason": "e2e check"})
-    audit = c.get(f"/api/cases/{yjh['id']}/audit").json()
-    check("audit chain valid (with fresh entries)", audit["verification"]["valid"] is True
-          and audit["verification"].get("entries", 0) >= 2,
-          f"{audit['verification'].get('entries')} entries")
+    with SessionLocal() as db:
+        plan_row = db.scalar(sa.select(PlanModel).where(
+            PlanModel.case_id == yjh["id"], PlanModel.status == "EXECUTED")
+            .order_by(PlanModel.version.desc()).limit(1))
+        action_row = db.scalar(sa.select(Action).where(Action.plan_id == plan_row.id))
+        n_actions = len(db.scalars(sa.select(Action)
+                                   .where(Action.plan_id == plan_row.id)).all())
+        plan = {"id": plan_row.id, "payloadHash": plan_row.payload_hash,
+                "payload": plan_row.payload}
+        check("executed plan + exactly one action", n_actions == 1
+              and action_row.status == "COMPLETED",
+              f"v{plan_row.version}, actions={n_actions}")
 
     # 13 packet PDF downloads
     r = c.get(f"/api/plans/{plan['id']}/packet")
@@ -120,10 +124,20 @@ def main() -> int:
         "expectedPlanHash": plan["payloadHash"],
         "expectedCaseVersion": plan["payload"]["case_version"]})
     body = r.json()
-    same_action = body.get("action", {}).get("id") == plan["action"]["id"]
+    same_action = body.get("action", {}).get("id") == action_row.id
     check("approve replay returns same action", r.status_code == 200 and same_action)
 
-    # 15 eval API surface
+    # 15 audit chain: fresh plan + reject exercises the chain (do this LAST so
+    # the executed plan above stays the "latest" for earlier beats)
+    r = c.post(f"/api/cases/{yjh['id']}/plan")
+    if r.status_code == 201:
+        c.post(f"/api/plans/{r.json()['id']}/reject", json={"reason": "e2e check"})
+    audit = c.get(f"/api/cases/{yjh['id']}/audit").json()
+    check("audit chain valid (with fresh entries)", audit["verification"]["valid"] is True
+          and audit["verification"].get("entries", 0) >= 2,
+          f"{audit['verification'].get('entries')} entries")
+
+    # 16 eval API surface
     runs = c.get("/api/eval/runs").json()["runs"]
     done = [x for x in runs if x["status"] == "DONE" and x["totals"]]
     check("eval runs recorded", len(done) >= 1,

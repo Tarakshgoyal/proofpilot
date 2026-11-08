@@ -76,12 +76,21 @@ merchant approved, and the audit log is a tamper-evident hash chain.
 
 ## Eval (measured, reproducible)
 
-`POST /api/eval/run?quick=true` runs 11 labelled scenarios (full suite: 33)
-through the **real** agent → verifier → decision pipeline and scores them.
-Results appear in the UI's **Eval** tab, including the headline pair:
-**raw-LLM unsupported-claim rate vs verifier-gated rate (0 by construction)**.
+`POST /api/eval/run` (or the button in the UI's **Eval** tab) runs labelled
+scenarios through the **real** agent → verifier → decision pipeline and scores
+them. Final full-suite run (33 scenarios, live NVIDIA model, 0 fallbacks):
+
+| Metric | Result |
+|---|---|
+| **Raw-LLM unsupported-claim rate** | **37.0%** — 67 of 181 asserted claims were struck |
+| **Verifier-gated rate** | **0.0%** — only VERIFIED claims can enter a packet, by construction |
+| Contradiction recall / false positives | **100%** (15/15) / **0** |
+| Correct-action accuracy | **90.9%** |
+| Baited-false-claim strike recall | 83.3% (must-verify recall: 100%) |
+
 Adversarial scenarios include a forged carrier document and prompt injection.
-Numbers are whatever the harness measures — synthetic data, honestly labelled.
+Numbers are whatever the harness measures — synthetic data, honestly labelled;
+sandbox adjudication is never presented as a real-world outcome.
 
 ## Stack
 
